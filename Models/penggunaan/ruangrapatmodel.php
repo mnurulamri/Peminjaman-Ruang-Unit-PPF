@@ -81,7 +81,6 @@ class RuangRapatModel extends CI_Model
 
     function listKegiatan($kd_ruang){
         //fungsi untuk menampilkan data pengajuan list
-
         $sql = "SELECT *, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang
                 FROM kegiatan a, waktu b, ruang_rapat c
                 WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND b.ruang = $kd_ruang
@@ -122,10 +121,6 @@ class RuangRapatModel extends CI_Model
 
     function insertKegiatan($data){
         $this->db->insert('kegiatan', $data);
-        //$nomor = $data['nomor'];  //fetch nomor yang dikirim via form
-        //echo 'nomor = '.$nomor = $this->cekNomor($nomor);   //cek nomor supaya jangan dobel
-        //$data['nomor'] = $nomor;  //refresh nomor
-        //echo $nomor;      
     }
 
     function insertJadwal($data){
@@ -199,15 +194,7 @@ class RuangRapatModel extends CI_Model
         while ($rows = mysql_fetch_object($result)) {
             $data[] = $rows;
         }
-        return $data;          
-
-        /* yang lama
-        $this->db->select('*, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun');
-        $this->db->from('kegiatan a, waktu b, ruang_rapat c');
-        $this->db->where("end_date >= '$start_date' AND start_date <= '$end_date' AND b.ruang = '$ruang' AND event_id <> '$event_id' AND b.ruang = kd_ruang AND a.nomor = b.nomor");
-        $data = $this->db->get()->result();
-        return $data;
-        */
+        return $data;    
     }
 
     function cekJadwalBentrok($start_date, $end_date, $ruang)  //cek jadwal bentrok pada saat add row jadwal
@@ -234,14 +221,6 @@ class RuangRapatModel extends CI_Model
             $data[] = $rows;
         }
         return $data;  
-
-        /* yang lama
-        $this->db->select('*, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun');
-        $this->db->from('kegiatan a, waktu b, ruang_rapat c');
-        $this->db->where("end_date >= '$start_date' AND start_date <= '$end_date' AND b.ruang = '$ruang' AND b.ruang = kd_ruang AND a.nomor = b.nomor");
-        
-        $data = $this->db->get()->result();*/
-
     }
 	
     function getListStatusPinjam()
