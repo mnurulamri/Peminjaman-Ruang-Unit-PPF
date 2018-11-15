@@ -269,7 +269,11 @@ class RuangRapat extends CI_Controller
 			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
 			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
 
-			$jadwal_bentrok = $this->ruangrapatmodel->jadwalBentrok($event_id, $start_date, $end_date, $ruang);
+			if ($ruang == 236 OR $ruang == 237) {
+				# code...
+			} else {
+				$jadwal_bentrok = $this->ruangrapatmodel->jadwalBentrok($event_id, $start_date, $end_date, $ruang);
+			}
 			
 			$j=0; //counter data bentrok
 			if ($jadwal_bentrok) {
@@ -287,7 +291,7 @@ class RuangRapat extends CI_Controller
 					$tahun 		= $value->tahun;
 					$tanggal 	= $tgl.' '.$bulan.' '.$tahun;			
 					//tampilkan pesan bentrok ke dalam form
-					$data_bentrok[$j] = '<div class="well well-sm">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';
+					$data_bentrok[$j] = '<div class="well well-sm" style="color:red">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';
 					echo '<div class="well well-sm">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';	
 				}
 				$j++;		
@@ -309,7 +313,7 @@ class RuangRapat extends CI_Controller
 		
 		//tutup modal bila sudah tidak ada jadwal yang bentrok
 		if (count($data_bentrok) == 0) {
-			echo '<script>window.location.replace("pengajuanList");</script>';
+			echo '<script>window.location.replace("daftar-pengajuan");</script>';
 		}
 	}
 
@@ -351,7 +355,7 @@ class RuangRapat extends CI_Controller
 	public function pengajuanEdit()
 	{  //form edit pengajuan
 		$id = $this->input->post('id');
-		$data['ruang_new']= $this->getRuang();
+		$data['ruang_new']= $this->getRuangAddRow();
 		$data['data'] 	= $this->ruangrapatmodel->editJadwal($id);
 		$this->load->view('penggunaan/ruangRapatPengajuanEdit', $data);
 	}
@@ -398,8 +402,24 @@ class RuangRapat extends CI_Controller
 		return $html;		
 	}
 
-	public function getFieldRuang($nm_ruang=''){
+	public function getRuangAddRow(){
 		$ruang = $this->ruangrapatmodel->getRuang();
+
+		$html='';
+		foreach ($ruang as $k => $v) {
+			$html.= '<option value="'.$v->kd_ruang.'">'.$v->nm_ruang.'</option>';
+		}
+		return $html;		
+	}	
+
+	public function getFieldRuang($nm_ruang=''){
+		//set ruang berdasarkan hak akses
+		$hak_akses = ($this->session->userdata['logged_in']['hak_akses']);
+		if($hak_akses == 1){ //ruang untuk admin
+			$ruang = $this->ruangrapatmodel->getRuang();
+		} else {
+			$ruang = $this->ruangrapatmodel->getRuangUser(); //untuk mengeluarkan ruang F.201
+		}
 
 		$html='<select id="ruang" name="ruang" class="ruang form-control" style="width: 100px">';
 		foreach ($ruang as $k => $v) {
@@ -599,12 +619,20 @@ class RuangRapat extends CI_Controller
           $waktu_akhir  = date('H:i', strtotime($v->end_date));
           $waktu      	= $waktu_awal.' - '.$waktu_akhir;
 
+			/*
+			//cek jadwal bentrok
+			if($v->start_date >= date("Y-m-d H:i:s")){
+				$jadwal_bentrok[$i] = $this->ruangrapatmodel->jadwalBentrok($v->event_id, $v->start_date, $v->end_date, $v->kd_ruang);
+			}
+			*/
+			
           //masukkan ke dalam array
           $jadwal[$i]['ruang'] 		  = $ruang;
           $jadwal[$i]['tgl_kegiatan'] = $tgl_kegiatan;
           $jadwal[$i]['waktu']    	  = $waktu;
-
-          //counter
+          $jadwal[$i]['bentrok']    	  = $this->ruangrapatmodel->jadwalBentrok($v->event_id, $v->start_date, $v->end_date, $v->kd_ruang);
+	
+         //counter
           $i++;
 		}
 
@@ -637,6 +665,7 @@ class RuangRapat extends CI_Controller
 	public function statusKonfirmasiPersetujuan(){
 		$id_kegiatan = $this->input->post('id_kegiatan');
 		$status 	 = $this->input->post('status');
+		$no_surat 	 = $this->input->post('no_surat');
 
 		switch ($status) {
 			case 1:
@@ -654,9 +683,10 @@ class RuangRapat extends CI_Controller
 		}
 		
 		$data = array(
-			'status' => $status
+			'status' => $status,
+			'no_surat' => $no_surat
 		);
-		echo $ket_status;
+		echo $no_surat.'|'.$ket_status;
 		$this->ruangrapatmodel->editKegiatan($data, $id_kegiatan);
 	}
 
@@ -829,11 +859,15 @@ class RuangRapat extends CI_Controller
 				$bulan 		= $array_bulan[$value->bulan];
 				$tahun 		= $value->tahun;
 				$tanggal 	= $tgl.' '.$bulan.' '.$tahun;
+				$jenis_event = (substr($value->nomor, 0, 4) == 'siak' or substr($value->nomor, 0, 4) == 'siak') ? 'Mata Kuliah' : 'Kegiatan';
 
 				//tampilkan pesan bentrok
 				echo '
 				<div>&nbsp;</div>
-				<pre style="text-align:center">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</pre>';	
+				<!--<pre style="text-align:center; color:red">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</pre>-->
+				<pre style="text-align:center; color:red">Bentrok Dengan '.$jenis_event. ' '.$event_name.'</pre>
+
+';	
 			}		
 		}
 	}
@@ -1056,4 +1090,19 @@ class RuangRapat extends CI_Controller
 		$this->load->view('layout/template', $data);
 	}
 	
+	public function dataUjian()
+	{
+		//$this->sessionUser();
+		$userlogin = ($this->session->userdata['logged_in']['username']);
+		$data_header['foto'] = $this->service->getFoto($userlogin);
+		$data_header['nama'] = $this->service->getNama($userlogin);
+		$this->load->view('layout/1-head-title');
+		$this->load->view('layout/2-header', $data_header);
+		$data['ruang'] 		= $this->ruangrapatmodel->getRuang();
+		$data['menu'] 		= $this->load->view('layout/3_menu', $data, true);
+		$this->load->view('layout/3-menu', $data);		
+		$data['script'] 	= $this->load->view('layout/template-2', null, true);
+		$data['data'] = $this->ruangrapatmodel->getDataUjian();
+		$this->load->view('penggunaan/dataUjian', $data);
+	}
 }
