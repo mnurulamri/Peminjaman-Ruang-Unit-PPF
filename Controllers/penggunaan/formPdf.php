@@ -236,13 +236,13 @@ class FormPdf extends CI_Controller {
 		} else{
 			$no_surat = $data['no_surat'];
 		}
-		$pdf->Cell(100, 7, 'Nomor : '.$no_surat.' /G.05/1/UN2.F9.D4.2/RTK.00/'.$bulan.'/'.$tahun, 1, 0, 'C', 1, '', 0);
+		$pdf->Cell(100, 7, 'Nomor : '.$no_surat.' /G.05/1/UN2.F9.D4.2/RTK.00/'.$tahun, 1, 0, 'C', 1, '', 0); //$pdf->Cell(100, 7, 'Nomor : '.$no_surat.' /G.05/1/UN2.F9.D4.2/RTK.00/'.$bulan.'/'.$tahun, 1, 0, 'C', 1, '', 0);
 		$pdf->SetFont('dejavusans', '', 8, '', true);
 		
 		if($this->session->userdata['logged_in']['hak_akses'] == 1){
-			$pdf->Cell(80, 7, ' Tanggal : '.$data['tgl_proses'], 1, 1, 'C', 1, '', 0);
+			$pdf->Cell(80, 7, ' Tanggal : '.$data['tgl_proses'], 1, 1, 'L', 1, '', 0);
 		} else {
-			$pdf->Cell(80, 7, ' Tanggal : ', 1, 1, 'C', 1, '', 0);
+			$pdf->Cell(80, 7, ' Tanggal : ', 1, 1, 'L', 1, '', 0);
 		}
 		
 		//$pdf->Cell(180, 7, '', 1, 1, 'L', 1, '', 0);
@@ -291,31 +291,32 @@ class FormPdf extends CI_Controller {
 			//draw cells and record maximum cellcount
 			//cell height is 7 and width is 80
 			// MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
-			$cellcount = $pdf->MultiCell(55, 9, '', 0, 'J', 0, 0, $startX, $startY+1, true, 0, false, true, 40, 'M');  //$cellcount = $pdf->MultiCell(55,7,'',0,'L',0,0);
+			$cellcount = $pdf->MultiCell(55, 5, '', 0, 'J', 0, 0, $startX, $startY+1, true, 0, false, true, 40, 'M');  //$cellcount = $pdf->MultiCell(55,7,'',0,'L',0,0);
 			if ($cellcount > $maxnocells ) {$maxnocells = $cellcount;}
-				$cellcount = $pdf->MultiCell(40,9,$row['ruang'],0,'C',0,0);
+				$cellcount = $pdf->MultiCell(40,5,$row['ruang'],0,'C',0,0);
 			if ($cellcount > $maxnocells ) {$maxnocells = $cellcount;}
-				$cellcount = $pdf->MultiCell(50,9,$row['tgl_kegiatan'],0,'C',0,0);
+				$cellcount = $pdf->MultiCell(50,5,$row['tgl_kegiatan'],0,'C',0,0);
 			if ($cellcount > $maxnocells ) {$maxnocells = $cellcount;}
-				$cellcount = $pdf->MultiCell(35,9,$row['waktu'],0,'C',0,0);
+				$cellcount = $pdf->MultiCell(35,5,$row['waktu'],0,'C',0,0);
 			if ($cellcount > $maxnocells ) {$maxnocells = $cellcount;}
 				$pdf->SetXY($startX,$startY);
 		 
 			//now do borders and fill
-			//cell height is 7 times the max number of cells
-			$pdf->MultiCell(55,$maxnocells * 9,'','LR','L',0,0);
-			$pdf->MultiCell(40,$maxnocells * 9,'','LR','L',0,0);
-			$pdf->MultiCell(50,$maxnocells * 9,'','LR','L',0,0);
-			$pdf->MultiCell(35,$maxnocells * 9,'','LR','L',0,0);
+			//cell height is 5 times the max number of cells
+			$pdf->MultiCell(55,$maxnocells * 5,'','LR','L',0,0);
+			$pdf->MultiCell(40,$maxnocells * 5,'','LR','L',0,0);
+			$pdf->MultiCell(50,$maxnocells * 5,'','LR','L',0,0);
+			$pdf->MultiCell(35,$maxnocells * 5,'','LR','L',0,0);
 		 
-			$pdf->Ln(9);
+			$pdf->Ln();  //psak 15 atau 20
 		}
 
 		$pdf->Cell(55, 7, 'Jumlah Peserta : ', 1, 0, 'R', 1, '', 0);
 		$pdf->Cell(125, 7, ' '.$data['jml_peserta'], 1, 1, 'L', 1, '', 0);
 
 		$pdf->Cell(55, 7, 'Kebutuhan Tambahan : ', 1, 0, 'R', 1, '', 0);
-		$pdf->Cell(125, 7, ' '.$data['kebutuhan'], 1, 1, 'L', 1, '', 0);
+		$pdf->MultiCell(125, 7, $data['kebutuhan'], 1, 'L', 1, 1, '', '', true);		
+		//$pdf->Cell(125, 7, ' '.$data['kebutuhan'], 1, 1, 'L', 1, '', 0);
 
 		//$pdf->Ln(3);
 
@@ -367,7 +368,8 @@ class FormPdf extends CI_Controller {
 		'L' => array('width' => 0.2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)),
 		'R' => array('width' => 0.2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)),
 		'B' => array('width' => 0.2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
-		$pdf->Cell(180, 15, $data['catatan'], $border, 1, 'L', 0, '', 0);
+		$pdf->MultiCell(180, 5, $data['catatan'], $border, 'L', 1, 1, '', '', true); // MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0)
+		//$pdf->Cell(180, 15, $data['catatan'], $border, 1, 'L', 0, '', 0);
 		
 		//$pdf->SetLineWidth(1);
 		$border = array(
@@ -436,13 +438,13 @@ class FormPdf extends CI_Controller {
 
 		$pdf->Ln(7);
 
-		$txt = "1. Pemohon  2. Celaning Service  3. IT  4.Teknisi  4. Satpam  6. Arsip";
+		$txt = "1. Pemohon  2. Cleaning Service  3. IT  4.Teknisi  4. Satpam  6. Arsip";
 		$pdf->MultiCell(45, 15, "Salinan : ", 0, 'R', 1, 0, '', '', true);
 		$pdf->MultiCell(135, 15, $txt, 0, 'L', 1, 1, '', '', true);
 
 	    // Close and output PDF document
 	    // This method has several options, check the source code documentation for more information.
-	    $pdf->Output('form Permohonan.pdf', 'I');    
+	    $pdf->Output('form Permohonan.pdf', 'D');    
 	 
 	    //============================================================+
 	    // END OF FILE
