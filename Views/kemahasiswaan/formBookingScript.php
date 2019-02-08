@@ -131,7 +131,7 @@ $(document).ready(function() {
         //insert data dan jadwal kegiatan
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "penggunaan/formBooking/simpan",
+            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBooking/simpan",
             data: formData,
             contentType: false,       // The content type used when sending data to the server.
             cache: false,             // To unable request pages to be cached
@@ -304,7 +304,7 @@ $(document).ready(function() {
         
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "penggunaan/formBooking/cekJadwalBentrok",
+            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBooking/cekJadwalBentrok",
             data: {
                 ruang:ruang,  
                 tgl_kegiatan:tgl_kegiatan,
