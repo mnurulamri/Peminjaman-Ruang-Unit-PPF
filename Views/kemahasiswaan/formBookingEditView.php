@@ -251,23 +251,23 @@ foreach ($data_kegiatan as $k => $v) {
         <div id="process-info" style="display:none; text-align:center"><img src="<?=base_url();?>assets/images/spinner.gif"/></div>
         <span id="alert-riwayat" class="alert alert-success" role="alert" role="alert" style="display:none">Data sudah disimpan..</span>
         <button type="button" class="btn btn-danger tutup" data-dismiss="modal">Tutup</button>
-        <span><button class="simpan btn btn-info pull-right">Simpan</button></span> <!--   -->
-    </div>        
+        <span><button class="update btn btn-info pull-right">Simpan</button></span> <!--   -->
+    </div>    
 
-	
 </section>
 
 <script>
-//editor
-CKEDITOR.replace('edit_tema')
-CKEDITOR.replace('edit_deskripsi')
-CKEDITOR.replace('edit_tujuan')
-CKEDITOR.replace('edit_pengisi_acara')
 
-$(".simpan").click(function()
+    //editor
+    CKEDITOR.replace('edit_tema')
+    CKEDITOR.replace('edit_deskripsi')
+    CKEDITOR.replace('edit_tujuan')
+    CKEDITOR.replace('edit_pengisi_acara')
+
+$(".update").click(function()
 {
     nomor      = $('#nomor').val()
-    tgl_proses      = $('#tgl_proses').val()
+    tgl_proses      = $('#edit_tgl_proses').val()
     tgl_permohonan  = $('#edit_tgl_permohonan').val()
     //ruang           = $('#ruang').val();
     nama_kegiatan   = $('#edit_nama_kegiatan').val()
@@ -281,10 +281,64 @@ $(".simpan").click(function()
     catatan         = $('#edit_catatan').val()
 
     entitas_lainnya = $('#edit_entitas-lainnya').val();
-    jenis_lainnya = $('#jenis-lainnya').val();
-    var entitas = $('.entitas:checked').map(function(_, el) {
+    jenis_lainnya = $('#edit_jenis-lainnya').val();
+alert(jenis_lainnya)
+    var entitas = $('.edit_entitas:checked').map(function(_, el) {
         return $(el).val()
     }).get()
+
+    var kategori = $('.edit_kategori:checked').map(function(_, el) {
+        return $(el).val()
+    }).get()
+
+    var jenis = $('.edit_jenis:checked').map(function(_, el) {
+        return $(el).val()
+    }).get()
+
+    var peserta = $('.edit_peserta:checked').map(function(_, el) {
+        return $(el).val()
+    }).get()
+
+    var tema            = CKEDITOR.instances.tema.getData()
+    var deskripsi       = CKEDITOR.instances.deskripsi.getData()
+    var tujuan          = CKEDITOR.instances.tujuan.getData()
+    var pengisi_acara   = CKEDITOR.instances.pengisi_acara.getData()
+
+    //masukkan tanggal dan waktu kegiatan ke dalam array
+    var event_id = [];
+    $('.edit_event_id').each(function () { 
+        event_id.push($(this).val());
+    });
+
+    var ruang = [];
+    $('.edit_ruang').each(function () { 
+        ruang.push($(this).val());
+    });
+
+    var tgl_kegiatan = [];
+    $('.edit_tgl_kegiatan').each(function () { 
+        tgl_kegiatan.push($(this).val());
+    });
+
+    var jam_mulai = [];
+    $('.edit_jam_mulai').each(function () { 
+        jam_mulai.push($(this).val());
+    });
+
+    var menit_mulai = [];
+    $('.edit_menit_mulai').each(function () { 
+        menit_mulai.push($(this).val());
+    });
+
+    var jam_selesai = [];
+    $('.edit_jam_selesai').each(function () { 
+        jam_selesai.push($(this).val());
+    });
+
+    var menit_selesai = [];
+    $('.edit_menit_selesai').each(function () { 
+        menit_selesai.push($(this).val());
+    });
 
     var file = $("#edit_upload_form")[0] 
     var formData = new FormData(file)
@@ -302,6 +356,21 @@ $(".simpan").click(function()
     formData.append("catatan", catatan)
         formData.append("entitas", entitas);
         formData.append("entitas_lainnya", entitas_lainnya);
+        formData.append("kategori", kategori);
+        formData.append("jenis", jenis);
+        formData.append("jenis_lainnya", jenis_lainnya);
+        formData.append("tema", tema);
+        formData.append("deskripsi", deskripsi);
+        formData.append("tujuan", tujuan);
+        formData.append("pengisi_acara", pengisi_acara);
+        formData.append("peserta", peserta);
+        formData.append("event_id", event_id);
+        formData.append("ruang", ruang);  
+        formData.append("tgl_kegiatan", tgl_kegiatan);
+        formData.append("jam_mulai", jam_mulai);
+        formData.append("jam_selesai", jam_selesai);
+        formData.append("menit_mulai", menit_mulai);
+        formData.append("menit_selesai", menit_selesai);
 
     //update data dan jadwal kegiatan
     $.ajax({
@@ -331,10 +400,10 @@ $("#edit_add_row").click(function()
         var text ='<tr>'+
                 '<td class="form-inline">'+
                     '<input type="checkbox" class="check_box"/>&nbsp;&nbsp;'+
-                    '<input type="hidden" id="event_id" name="event_id" class="event_id" value="">'+
+                    '<input type="hidden" id="edit_event_id" name="edit_event_id" class="edit_event_id" value="">'+
                      ruang + '&nbsp;&nbsp;' +
-                    '<input type="text" id="tgl_kegiatan" class="tgl_kegiatan form-control" name="tgl_kegiatan" size="10" value="'+formattedDate+'" placeholder="mm/dd/yyyy"/>&nbsp;&nbsp;'+
-                        '<select name="jam_mulai" id="jam_mulai" class="jam_mulai form-control">'+
+                    '<input type="text" id="edit_tgl_kegiatan" class="edit_tgl_kegiatan form-control" name="edit_tgl_kegiatan" size="10" value="'+formattedDate+'" />&nbsp;&nbsp;'+
+                        '<select name="edit_jam_mulai" id="edit_jam_mulai" class="edit_jam_mulai form-control">'+
                             '<option value="08">08</option>'+
                             '<option value="09">09</option>'+
                             '<option value="10">10</option>'+
@@ -348,7 +417,7 @@ $("#edit_add_row").click(function()
                             '<option value="18">18</option>'+
                             '<option value="19">19</option>'+
                         '</select>'+
-                        '<select name="menit_mulai" id="menit_mulai" class="menit_mulai form-control">'+
+                        '<select name="edit_menit_mulai" id="edit_menit_mulai" class="edit_menit_mulai form-control">'+
                             '<option value="00" selected >00</option>'+
                             '<option value="05">05</option>'+
                             '<option value="10">10</option>'+
@@ -362,7 +431,7 @@ $("#edit_add_row").click(function()
                             '<option value="50">50</option>'+
                             '<option value="55">55</option>'+
                         '</select>&nbsp;-&nbsp;'+
-                        '<select name="jam_selesai" id="jam_selesai" class="jam_selesai form-control">'+
+                        '<select name="edit_jam_selesai" id="edit_jam_selesai" class="edit_jam_selesai form-control">'+
                               '<option value="08">08</option>'+
                               '<option value="09">09</option>'+
                               '<option value="10">10</option>'+
@@ -378,7 +447,7 @@ $("#edit_add_row").click(function()
                               '<option value="20">20</option>'+
                               '<option value="21">21</option>'+
                         '</select>'+
-                        '<select name="menit_selesai" id="menit_selesai" class="menit_selesai form-control">'+
+                        '<select name="edit_menit_selesai" id="edit_menit_selesai" class="edit_menit_selesai form-control">'+
                           '<option value="00" selected >00</option>'+
                           '<option value="05">05</option>'+
                           '<option value="10">10</option>'+
@@ -419,4 +488,71 @@ $("#edit_clear").click(function()
     $('#test tr').empty();
     $('#edit_jadwal').empty();
 })
+
+$("#edit_jam_selesai").change(function(){
+    var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val()
+    var jam_selesai = $(this).parent().find('#edit_jam_selesai').val()
+    var nama_hari  = namaHari(tgl_kegiatan)
+    
+    //peminjaman ruang pada hari sabtu hanya diperkenankan sampai dengan jam 14.00
+    if (nama_hari == 'Sabtu'){
+        if (jam_selesai > 14){
+            alert('Kegiatan pada hari sabtu hanya diizinkan sampai dengan pukul 14.00 WIB')
+            $(this).parent().find('#edit_jam_selesai').val('14')
+        }
+    }
+})
+
+$(".edit_ruang").change(function(){
+    var nama_ruang = $(this).val()
+    if(nama_ruang == 201 || nama_ruang == 202){
+        alert("Penggunaan ruang ini hanya dikhususkan untuk kegiatan rapat, selanjutnya silahkan berkoordinasi dengan staf sekretariat pimpinan")   
+   }
+   
+})
+
+$(document).ready(function() {
+    $(document).on('focus', '.edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan', function(){
+        $(".edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan").datepicker({
+            autoclose: true,
+            language: "id"
+        })
+    })
+
+    //cek jadwal bentrok
+    $(document).on('change', ".edit_ruang, .edit_tgl_kegiatan, .edit_jam_mulai, .edit_jam_selesai, .edit_menit_mulai, .edit_menit_selesai", function(){
+        var ruang       = $(this).parent().find('#edit_ruang').val();
+        var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val();
+        var jam_mulai   = $(this).parent().find('#edit_jam_mulai').val();
+        var jam_selesai = $(this).parent().find('#edit_jam_selesai').val();
+        var menit_mulai = $(this).parent().find('#edit_menit_mulai').val();
+        var menit_selesai = $(this).parent().find('#edit_menit_selesai').val();
+        //alert(ruang + ' ' + tgl_kegiatan + ' ' + jam_mulai + ' ' + menit_mulai + ' ' + jam_selesai + ' ' + menit_selesai); return;
+        
+        $.ajax({
+            type: "POST",
+            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBooking/cekJadwalBentrok",
+            data: {
+                ruang:ruang,  
+                tgl_kegiatan:tgl_kegiatan,
+                jam_mulai:jam_mulai,
+                jam_selesai:jam_selesai,
+                menit_mulai:menit_mulai,
+                menit_selesai:menit_selesai
+            },
+            success: function(data) {
+                $('.pesan-bentrok').html(data);
+                if (data != '') {
+                    //Check to see if there is any text
+                    // If there is no text within the input ten disable the button
+                    $('.simpan').prop('disabled', true);
+                } else {
+                    //If there is text in the input, then enable the button
+                    $('.simpan').prop('disabled', false);
+                }
+            }
+        })
+    })
+})
+
 </script>
