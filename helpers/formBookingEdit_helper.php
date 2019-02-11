@@ -23,7 +23,7 @@ if (! function_exists('checkbox_entitas'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>            
-		                <input type="checkbox" name="edit_entitas" class="entitas" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
+		                <input type="checkbox" name="edit_entitas" class="edit_entitas" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
 		                </label>
 		            </div>';
 		        } else {
@@ -31,18 +31,18 @@ if (! function_exists('checkbox_entitas'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>              
-		                    <input type="checkbox" name="edit_entitas" class="entitas" value="'.$value.'" >'.$value.'
+		                    <input type="checkbox" name="edit_entitas" class="edit_entitas" value="'.$value.'" >'.$value.'
 		                </label>
 		            </div>';
 		        }
 
 		        //buat checkbox khusus untuk isian checkbox lainnya
 		        foreach ($data_kegiatan_entitas as $k => $v) {
-		            if( $v['entitas'] != 'individu' AND $v['entitas'] != 'lembaga' AND $v['entitas'] != 'instansi'){
+		            if( $v['entitas'] != 'Individu' AND $v['entitas'] != 'Lembaga' AND $v['entitas'] != 'Instansi/Lembaga Eksternal'){
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>
-		                        <input type="checkbox" name="edit_entitas" class="entitas" value="'.$value.'" checked>
+		                        <input type="checkbox" name="edit_entitas" class="edit_entitas" value="lainnya" checked>
 		                        <input type="text" id="edit_entitas-lainnya" name="edit_entitas-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['entitas'].'">
 		                    </label>
 		                </div>';
@@ -50,7 +50,7 @@ if (! function_exists('checkbox_entitas'))
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>                
-		                        <input type="checkbox" name="entitas" class="entitas" value="lainnya" >
+		                        <input type="checkbox" name="edit_entitas" class="edit_entitas" value="lainnya" >
 		                        <input type="text" id="edit_entitas-lainnya" name="edit_entitas-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 		                    </label>
 		                </div>';
@@ -71,14 +71,14 @@ if (! function_exists('checkbox_entitas'))
 				$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="edit_entitas" class="entitas" value="'.$value.'" > '. $value.'
+	                        <input type="checkbox" name="edit_entitas" class="edit_entitas" value="'.$value.'" > '. $value.'
 	                    </label>
 	                </div>';
 			}
 			$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="edit_entitas" class="entitas" value="lainnya" >
+	                        <input type="checkbox" name="edit_entitas" class="edit_entitas" value="lainnya" >
 	                        <input type="text" id="edit_entitas-lainnya" name="edit_entitas-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 	                    </label>
 	                </div>';
@@ -109,7 +109,7 @@ if (! function_exists('checkbox_kategori'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>            
-		                <input type="checkbox" name="kategori" class="kategori" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
+		                <input type="checkbox" name="edit_kategori" class="edit_kategori" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
 		                </label>
 		            </div>';
 		        } else {
@@ -117,7 +117,7 @@ if (! function_exists('checkbox_kategori'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>              
-		                    <input type="checkbox" name="kategori" class="kategori" value="'.$value.'" >'.$value.'
+		                    <input type="checkbox" name="edit_kategori" class="edit_kategori" value="'.$value.'" >'.$value.'
 		                </label>
 		            </div>';
 		        }   
@@ -135,15 +135,15 @@ if (! function_exists('checkbox_kategori'))
 				$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="kategori" class="kategori" value="'.$value.'" > '. $value.'
+	                        <input type="checkbox" name="edit_kategori" class="edit_kategori" value="'.$value.'" > '. $value.'
 	                    </label>
 	                </div>';
 			}
 			$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="kategori" class="kategori" value="lainnya" >
-	                        <input type="text" id="kategori-lainnya" name="kategori-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
+	                        <input type="checkbox" name="edit_kategori" class="edit_kategori" value="lainnya" >
+	                        <input type="text" id="kategori-lainnya" name="edit_kategori-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 	                    </label>
 	                </div>';
 		}
@@ -174,7 +174,7 @@ if (! function_exists('checkbox_jenis'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>            
-		                <input type="checkbox" name="jenis" class="jenis" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
+		                <input type="checkbox" name="edit_jenis" class="edit_jenis" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
 		                </label>
 		            </div>';
 		        } else {
@@ -182,7 +182,7 @@ if (! function_exists('checkbox_jenis'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>              
-		                    <input type="checkbox" name="jenis" class="jenis" value="'.$value.'" >'.$value.'
+		                    <input type="checkbox" name="edit_jenis" class="edit_jenis" value="'.$value.'" >'.$value.'
 		                </label>
 		            </div>';
 		        }
@@ -193,16 +193,16 @@ if (! function_exists('checkbox_jenis'))
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>
-		                        <input type="checkbox" name="jenis" class="jenis" value="'.$value.'" checked>
-		                        <input type="text" id="jenis-lainnya" name="jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['jenis'].'">
+		                        <input type="checkbox" name="edit_jenis" class="edit_jenis" value="lainnya" checked>
+		                        <input type="text" id="edit_jenis-lainnya" name="edit_jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['jenis'].'">
 		                    </label>
 		                </div>';
 		            } else {
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>                
-		                        <input type="checkbox" name="jenis" class="jenis" value="lainnya" >
-		                        <input type="text" id="jenis-lainnya" name="jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
+		                        <input type="checkbox" name="edit_jenis" class="edit_jenis" value="lainnya" >
+		                        <input type="text" id="edit_jenis-lainnya" name="edit_jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 		                    </label>
 		                </div>';
 		            }
@@ -221,15 +221,15 @@ if (! function_exists('checkbox_jenis'))
 				$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="jenis" class="jenis" value="'.$value.'" > '. $value.'
+	                        <input type="checkbox" name="edit_jenis" class="edit_jenis" value="'.$value.'" > '. $value.'
 	                    </label>
 	                </div>';
 			}
 			$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="jenis" class="jenis" value="lainnya" >
-	                        <input type="text" id="jenis-lainnya" name="jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
+	                        <input type="checkbox" name="edit_jenis" class="edit_jenis" value="lainnya" >
+	                        <input type="text" id="jenis-lainnya" name="edit_jenis-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 	                    </label>
 	                </div>';
 		}		
@@ -259,7 +259,7 @@ if (! function_exists('checkbox_peserta'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>            
-		                <input type="checkbox" name="peserta" class="peserta" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
+		                <input type="checkbox" name="edit_peserta" class="edit_peserta" value="'.$value.'" '.$array_checkbox[$value].'>'.$value.'
 		                </label>
 		            </div>';
 		        } else {
@@ -267,7 +267,7 @@ if (! function_exists('checkbox_peserta'))
 		            $data_checkbox.= '
 		            <div class="checkbox">
 		                <label>              
-		                    <input type="checkbox" name="peserta" class="peserta" value="'.$value.'" >'.$value.'
+		                    <input type="checkbox" name="edit_peserta" class="edit_peserta" value="'.$value.'" >'.$value.'
 		                </label>
 		            </div>';
 		        }
@@ -278,22 +278,22 @@ if (! function_exists('checkbox_peserta'))
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>
-		                        <input type="checkbox" name="peserta" class="peserta" value="'.$value.'" checked>
-		                        <input type="text" id="peserta-lainnya" name="peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['jpesertanis'].'">
+		                        <input type="checkbox" name="edit_peserta" class="edit_peserta" value="lainnya" checked>
+		                        <input type="text" id="edit_peserta-lainnya" name="edit_peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['jpesertanis'].'">
 		                    </label>
 		                </div>';
 		            } else {
 		                $lainnya = '
 		                <div class="checkbox">
 		                    <label>                
-		                        <input type="checkbox" name="peserta" class="peserta" value="lainnya" >
-		                        <input type="text" id="peserta-lainnya" name="peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
+		                        <input type="checkbox" name="edit_peserta" class="edit_peserta" value="lainnya" >
+		                        <input type="text" id="edit_peserta-lainnya" name="edit_peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 		                    </label>
 		                </div>';
 		            }
-		        }    
+		        }   
 		    }
-			$html = $data_checkbox.$lainnya;
+			$html = $data_checkbox;
 		} else {
 			#jika belum ada sama sekali data jenis kegiatannya, cetak blanko kosong isian jenis kegiatan
 			$html = '';
@@ -306,17 +306,19 @@ if (! function_exists('checkbox_peserta'))
 				$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="peserta" class="peserta" value="'.$value.'" > '. $value.'
+	                        <input type="checkbox" name="edit_peserta" class="edit_peserta" value="'.$value.'" > '. $value.'
 	                    </label>
 	                </div>';
 			}
+			/*
 			$html .= '
 	                <div class="checkbox">
 	                    <label>
-	                        <input type="checkbox" name="peserta" class="peserta" value="lainnya" >
-	                        <input type="text" id="peserta-lainnya" name="peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
+	                        <input type="checkbox" name="edit_peserta" class="edit_peserta" value="lainnya" >
+	                        <input type="text" id="edit_peserta-lainnya" name="edit_peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 	                    </label>
 	                </div>';
+	        */
 		}		
 		return $html;
 	}
