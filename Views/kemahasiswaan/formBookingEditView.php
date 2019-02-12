@@ -10,19 +10,27 @@
 
 foreach ($data_kegiatan as $k => $v) {
     $nomor          = $v['nomor'];
+    $event_name     = $v['event_name'];
     $nama_peminjam  = $v['nama_peminjam'];
     $id_peminjam    = $v['id_peminjam'];
     $prodi          = $v['prodi'];
     $tgl_permohonan = $v['tgl_permohonan'];
     $tgl_proses 	= $v['tgl_proses'];
     $catatan        = $v['catatan'];
-    $details        = $v['details'];
+    $kebutuhan      = $v['details'];
     $jml_peserta    = $v['jml_peserta'];
     $no_telp        = $v['no_telp'];
     $email          = $v['email'];
+    $tema           = $v['tema'];
+    $deskripsi      = $v['deskripsi'];
+    $tujuan         = $v['tujuan'];
+    $pengisi_acara  = $v['pengisi_acara'];
+    $file_tor       = $v['file_tor'];
+    $file_rundown   = $v['file_rundown'];
+    $file_undangan  = $v['file_undangan'];
+    $file_lampiran  = $v['file_lampiran'];
 }
 
-//print_r(checkbox_entitas($data_kegiatan_entitas)) ;
 ?>
 <input type="text" id="nomor" name="nomor" class="form-control" size="5" value="<?=$nomor?>"/>
 <section class="content" >
@@ -135,31 +143,31 @@ foreach ($data_kegiatan as $k => $v) {
                 <div class="form-group">
                     <label for="nama_kegiatan" class="col-sm-3 control-label" style="text-align:right">Nama Kegiatan :  </label>
                     <div class="col-sm-9">
-                        <input type="text" id="edit_nama_kegiatan" name="edit_nama_kegiatan" placeholder="Nama Kegiatan" class="form-control input-md" required="">
+                        <input type="text" id="edit_nama_kegiatan" name="edit_nama_kegiatan" placeholder="Nama Kegiatan" class="form-control input-md" value="<?=$event_name?>" required="">
                     </div>                        
                 </div>
                 <div class="form-group">
                     <label for="tema" class="col-sm-3 control-label" style="text-align:right">Tema Kegiatan:  </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_tema" name="edit_tema" rows="5" cols="80"></textarea>
+                        <textarea id="edit_tema" name="edit_tema" rows="5" cols="80"> <?=$tema?> </textarea>
                     </div>                        
                 </div>
                 <div class="form-group">
                     <label for="deskripsi" class="col-sm-3 control-label" style="text-align:right">Deskripsi Kegiatan:  </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_deskripsi" name="edit_deskripsi" rows="5" cols="80"></textarea>
+                        <textarea id="edit_deskripsi" name="edit_deskripsi" rows="5" cols="80"> <?=$deskripsi?> </textarea>
                     </div>                        
                 </div>
                 <div class="form-group">
                     <label for="tujuan" class="col-sm-3 control-label" style="text-align:right">Tujuan Kegiatan:  </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_tujuan" name="edit_tujuan" rows="5" cols="80"></textarea>
+                        <textarea id="edit_tujuan" name="edit_tujuan" rows="5" cols="80"> <?=$tujuan?> </textarea>
                     </div>                        
                 </div>
                 <div class="form-group">
                     <label for="pengisi_acara" class="col-sm-3 control-label" style="text-align:right">Pengisi Acara:  (Deskirpsikan background dan latar belakang pengisi acara) </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_pengisi_acara" name="edit_pengisi_acara" rows="10" cols="80"></textarea>
+                        <textarea id="edit_pengisi_acara" name="edit_pengisi_acara" rows="10" cols="80"> <?=$pengisi_acara?> </textarea>
                     </div>                        
                 </div>
                 <div class="form-group">
@@ -172,7 +180,7 @@ foreach ($data_kegiatan as $k => $v) {
                 <div class="form-group">
                     <label for="jml_peserta" class="col-sm-3 control-label" style="text-align:right">Jumlah Peserta :  </label>
                     <div class="col-sm-9">
-                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" required="">
+                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" value="jml_peserta" required="">
                     </div>                        
                 </div>
                 <div>&nbsp;</div>
@@ -183,10 +191,10 @@ foreach ($data_kegiatan as $k => $v) {
 				          <input type="hidden" name="action" id="action" value="test action">
 				          <input type="hidden" name="post_foto" id="post_foto" value="test id foto">
                           <table>
-                            <tr><td>TOR Acara/Kegiatan</td><td><input type="file" name="file_tor"></td></tr>
-                            <tr><td>Rundown Acara/Kegiatan</td><td><input type="file" name="file_rundown"></td></tr>
-                            <tr><td>Undangan Resmi</td><td><input type="file" name="file_undangan"></td></tr>
-                            <tr><td>Lampiran Penting Lainnya</td><td><input type="file" name="file_lampiran"></td></tr>
+                            <tr><td>TOR Acara/Kegiatan</td><td><input type="file" name="file_tor" value=""></td><td><i><?=$file_tor?></i></td></tr>
+                            <tr><td>Rundown Acara/Kegiatan</td><td><input type="file" name="file_rundown"></td><td><i><?=$file_rundown?></i></td></tr>
+                            <tr><td>Undangan Resmi</td><td><input type="file" name="file_undangan"></td><td><i><?=$file_undangan?></i></td></tr>
+                            <tr><td>Lampiran Penting Lainnya</td><td><input type="file" name="file_lampiran"></td><td><i><?=$file_lampiran?></i></td></tr>
                           </table>
 			        </form>
                     </div>                        
@@ -228,14 +236,14 @@ foreach ($data_kegiatan as $k => $v) {
                 <div class="form-group">
                     <label for="kebutuhan" class="col-sm-3 control-label" style="text-align:right">Kebutuhan Tambahan :  </label>
                     <div class="col-sm-9">
-                        <input type="text" id="edit_kebutuhan" name="edit_kebutuhan" placeholder="Kebutuhan Tambahan" class="form-control input-md" required="">
+                        <input type="text" id="edit_kebutuhan" name="edit_kebutuhan" placeholder="Kebutuhan Tambahan" class="form-control input-md" value="<?=$kebutuhan?>" required="">
                     </div>                        
                 </div>
                 
                 <div class="form-group">
                     <label for="catatan" class="col-sm-3 control-label" style="text-align:right">Catatan :  </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_catatan" name="edit_catatan" placeholder="Catatan" class="form-control input-md" required="" rows="4"></textarea>
+                        <textarea id="edit_catatan" name="edit_catatan" placeholder="Catatan" class="form-control input-md" required="" rows="4"><$catatan></textarea>
                     </div>                        
                 </div>
                 <div id="tester"></div>
@@ -282,7 +290,7 @@ $(".update").click(function()
 
     entitas_lainnya = $('#edit_entitas-lainnya').val();
     jenis_lainnya = $('#edit_jenis-lainnya').val();
-alert(jenis_lainnya)
+
     var entitas = $('.edit_entitas:checked').map(function(_, el) {
         return $(el).val()
     }).get()
