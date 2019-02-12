@@ -64,7 +64,7 @@ class FormBookingEdit extends CI_Controller
 	public function simpan()
 	{
 		//set variabel insert kegiatan
-		$nomor		= $this->input->post('nomor');
+		$nomor			= $this->input->post('nomor');
 		$tgl_proses		= $this->input->post('tgl_proses');
 		$tgl_permohonan = $this->input->post('tgl_permohonan');
 		$kd_ruang 		= $this->input->post('ruang');
@@ -89,6 +89,10 @@ class FormBookingEdit extends CI_Controller
 		$pengisi_acara 	= $this->input->post('pengisi_acara');
 		$peserta 		= $this->input->post('peserta');
 
+		//$tgl_proses 	= tanggalToDb($tgl_proses);		
+		$tgl_permohonan = tanggalToDb($tgl_permohonan);
+		$username = $this->session->userdata['logged_in']['username'];
+
 		$data_kegiatan = array(			
 			'event_name' 	=> $event_name,
 			'tgl_proses' 	=> $tgl_proses,
@@ -102,6 +106,13 @@ class FormBookingEdit extends CI_Controller
 			'nomor' 		=> $nomor,
 			'details'		=> $kebutuhan,
 			'catatan'		=> $catatan,
+			'status'		=> 0,
+			'username' 		=> $username,
+			'flag'			=> 0,
+			'tema' 			=> $tema,
+			'deskripsi' 	=> $deskripsi,
+			'tujuan' 		=> $tujuan,
+			'pengisi_acara'	=> $pengisi_acara
 		);
 
         $entitas = explode(",", $entitas);
@@ -112,6 +123,65 @@ class FormBookingEdit extends CI_Controller
 			$data_entitas[] = $value;
 		}
 
-		echo '<pre>';print_r($data_kegiatan);print_r($data_entitas);echo '</pre>';
+		$kategori = explode(",", $kategori);
+		foreach ($kategori as $key => $value) {
+			$data_kategori[] = $value;
+		}
+
+		$jenis = explode(",", $jenis);
+		foreach ($jenis as $key => $value) {
+			if ($value == 'lainnya') {
+				$value = $jenis_lainnya;
+			}
+			$data_jenis[] = $value;
+		}
+
+		$peserta = explode(",", $peserta);
+		foreach ($peserta as $key => $value) {
+			$data_peserta[] = $value;
+		}
+
+		//$this->formbookingmodel->updateKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
+
+		//$this->editJadwal($nomor);
+
+		$this->upload($_FILES, $nomor);
+		//echo '<pre>';
+		//print_r($data_peserta);
+		//echo '</pre>';
 	}
+
+	public function upload($files, $nomor)
+	{       
+        //kosongkan record dokumen dulu
+        $this->formbookingmodel->clear_dokumen($nomor);
+
+        foreach ($files as $key => $value) { 
+
+        	if($value['name']){
+	            //$config['file_name']    = $key;
+	            $config['upload_path']   = './dokumen/kemahasiswaan/';
+	            $config['allowed_types'] = 'gif|jpg|png|svg|pdf';  
+	            $config['max_size']		 = '50000'; // KB	
+
+	            $this->load->library('upload');
+	            $this->upload->initialize($config);  
+	            
+	            //$this->upload->do_upload($key);
+
+	            if($this->upload->do_upload($key)) {  
+	            	$file = $this->upload->data();
+	            	//proses update ke database 
+	            	$data = array($key => $file['file_name']);
+
+	            	$this->formbookingmodel->edit_dokumen($nomor, $data); 
+	            } else {
+	                echo "<pre>";
+	                print_r($this->upload->display_errors());
+	                echo "</pre>";
+	            }        		
+        	}            
+        }
+	}
+
 }
