@@ -32,7 +32,16 @@ if (count($data_user)==0) {
 
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="<?=base_url();?>assets/AdminLTE/plugins/datepicker/datepicker3.css">
-
+<!--form edit-->
+<div class="modal fade form-booking-edit" id="modal-form-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div id="form-edit">
+                <?//=include(APPPATH.'views/kemahasiswaan/formBookingEdit.php');?> 
+            </div>           
+        </div>
+    </div>
+</div>
 <div class="modal fade form-booking-add" id="modal-form-add" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -389,22 +398,16 @@ if (count($data_user)==0) {
     </div>
 </div>
 
+
+
 <?=$script?>
+
+
+
 <script src="<?=base_url();?>assets/AdminLTE/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="<?=base_url();?>assets/AdminLTE/plugins/datepicker/locales/bootstrap-datepicker.id.js"></script>
 <?=$form_script?>
 
-
-<!--form edit-->
-<div class="modal fade form-booking-edit" id="modal-form-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div id="form-edit">
-                <?//=include(APPPATH.'views/kemahasiswaan/formBookingEdit.php');?> 
-            </div>           
-        </div>
-    </div>
-</div>
 
 
 <script>
@@ -444,38 +447,48 @@ function searchFilter(page_num) {
         }
     });
 }
-
-$(function () {
-
-    $(document).on('click', '#form-booking', function(){  
-        //$(".modal-content").html('test');
-    });
-
+/*
+$(document).ready(function() {
+    $(document).on('click', '.edit-kegiatan', function(){
+        var nomor =  $(this).attr('id')
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url()?>kemahasiswaan/formBookingEdit/getData",      
+            data: {nomor:nomor},
+            success: function(res) {
+                if (res){
+                    $("#form-edit").html('').html(res)
+                } else {
+                    $("#event_name").html('ada error')
+                }
+            }
+        })
+    })
+})
+*/
+$(document).ready(function() 
+{
     $(document).on('hidden.bs.modal', '.modal', function(){    
         fetch_data();
-        //$(".modal-content").html('');
     });
 
     $(document).on('click', '.edit-kegiatan', function(){
         var nomor =  $(this).attr('id');
-        
-        //$(".modal-content").remove();
-        //$('.modal-dialog').html('<div class="modal-content"></div>');
         $.ajax({
             type: "POST",
-            url: "<?=base_url()?>" + "kemahasiswaan/formBookingEdit/getData",      
+            url: "<?=base_url()?>kemahasiswaan/formBookingEdit/getData",      
             data: {nomor:nomor},
             success: function(res) {
-                $("#form-edit").html(res);
-                /*if (res){
+                if (res){
                     $("#form-edit").html('').html(res);
                 } else {
                     $("#event_name").html('ada error');
-                }*/
+                }
             }
         });
     });
 })
+
 </script>
 <style type="text/css">
 .day{padding-left:3px; width:150px; vertical-align:top; padding-bottom:5px; border-bottom:1px solid #eee}

@@ -30,7 +30,7 @@ foreach ($data_kegiatan as $k => $v) {
     $file_undangan  = $v['file_undangan'];
     $file_lampiran  = $v['file_lampiran'];
 }
-
+        
 ?>
 <input type="text" id="nomor" name="nomor" class="form-control" size="5" value="<?=$nomor?>"/>
 <section class="content" >
@@ -190,11 +190,37 @@ foreach ($data_kegiatan as $k => $v) {
 			          <form id="edit_upload_form" enctype="multipart/form-data" method="post">
 				          <input type="hidden" name="action" id="action" value="test action">
 				          <input type="hidden" name="post_foto" id="post_foto" value="test id foto">
-                          <table>
-                            <tr><td>TOR Acara/Kegiatan</td><td><input type="file" name="file_tor" value=""></td><td><i><?=$file_tor?></i></td></tr>
-                            <tr><td>Rundown Acara/Kegiatan</td><td><input type="file" name="file_rundown"></td><td><i><?=$file_rundown?></i></td></tr>
-                            <tr><td>Undangan Resmi</td><td><input type="file" name="file_undangan"></td><td><i><?=$file_undangan?></i></td></tr>
-                            <tr><td>Lampiran Penting Lainnya</td><td><input type="file" name="file_lampiran"></td><td><i><?=$file_lampiran?></i></td></tr>
+                          <table class="table">
+                            <tr>
+                                <td>TOR Acara/Kegiatan</td>
+                                <td><input type="file" name="file_tor" value=""></td>
+                                <td id="file_tor"><?=$file_tor?></td>
+                                <td>
+                                    <?php echo $retVal = (!empty($file_tor)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_tor" data-file="'.$file_tor.'">hapus</button>' : '' ;?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rundown Acara/Kegiatan</td>
+                                <td><input type="file" name="file_rundown"></td>
+                                <td id="file_rundown"><?=$file_rundown?></td>
+                                <td>
+                                    <?php echo $retVal = (!empty($file_rundown)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_rundown" data-file="'.$file_rundown.'">hapus</button>' : '' ;?>
+                                    </td>
+                            </tr>
+                            <tr><td>Undangan Resmi</td>
+                                <td><input type="file" name="file_undangan"></td>
+                                <td id="file_undangan"><?=$file_undangan?></td>
+                                <td>
+                                    <?php echo $retVal = (!empty($file_undangan)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_undangan" data-file="'.$file_undangan.'">hapus</button>' : '' ;?>
+                                </td>
+                            </tr>
+                            <tr><td>Lampiran Penting Lainnya</td>
+                                <td><input type="file" name="file_lampiran"></td>
+                                <td id="file_lampiran"><?=$file_lampiran?></td>
+                                <td>
+                                    <?php echo $retVal = (!empty($file_lampiran)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_lampiran" data-file="'.$file_lampiran.'">hapus</button>' : '' ;?>
+                                </td>
+                            </tr>
                           </table>
 			        </form>
                     </div>                        
@@ -243,7 +269,7 @@ foreach ($data_kegiatan as $k => $v) {
                 <div class="form-group">
                     <label for="catatan" class="col-sm-3 control-label" style="text-align:right">Catatan :  </label>
                     <div class="col-sm-9">
-                        <textarea id="edit_catatan" name="edit_catatan" placeholder="Catatan" class="form-control input-md" required="" rows="4"><$catatan></textarea>
+                        <textarea id="edit_catatan" name="edit_catatan" placeholder="Catatan" class="form-control input-md" required="" rows="4"><?=$catatan?></textarea>
                     </div>                        
                 </div>
                 <div id="tester"></div>
@@ -266,15 +292,15 @@ foreach ($data_kegiatan as $k => $v) {
 
 <script>
 
-    //editor
-    CKEDITOR.replace('edit_tema')
-    CKEDITOR.replace('edit_deskripsi')
-    CKEDITOR.replace('edit_tujuan')
-    CKEDITOR.replace('edit_pengisi_acara')
+//editor
+CKEDITOR.replace('edit_tema')
+CKEDITOR.replace('edit_deskripsi')
+CKEDITOR.replace('edit_tujuan')
+CKEDITOR.replace('edit_pengisi_acara')
 
 $(".update").click(function()
 {
-    nomor      = $('#nomor').val()
+    nomor           = $('#nomor').val()
     tgl_proses      = $('#edit_tgl_proses').val()
     tgl_permohonan  = $('#edit_tgl_permohonan').val()
     //ruang           = $('#ruang').val();
@@ -478,14 +504,17 @@ $("#edit_add_row").click(function()
 
 $("#edit_del_row").click(function()
 {
-    if(!$.trim($('#edit_jadwal').html()).length){
+    if(!$.trim($('#edit_jadwal').html()).length)
+    {
         alert ("Now table is empty")
     }else{
-        $('#test').children('tr').find('input[type=checkbox]:checked').each(function () {
+        $('#test').children('tr').find('input[type=checkbox]:checked').each(function () 
+        {
             $(this).closest('tr').remove()
         })
 
-        $('#edit_jadwal').children('tr').find('input[type=checkbox]:checked').each(function () {
+        $('#edit_jadwal').children('tr').find('input[type=checkbox]:checked').each(function () 
+        {
             $(this).closest('tr').remove()
         })
     }
@@ -519,8 +548,30 @@ $(".edit_ruang").change(function(){
    
 })
 
-$(document).ready(function() {
-    $(document).on('focus', '.edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan', function(){
+$(".hapus-dokumen").click(function()
+{
+    var nomor       = $('#nomor').val()
+    var field       = $(this).data("dokumen")
+    var nama_file   = $(this).data("file")
+
+    $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>kemahasiswaan/formBookingEdit/hapusDokumen",
+        data: {
+            nomor:nomor,  
+            field:field,
+            nama_file:nama_file
+        },
+        success: function(data) {
+            console.log(data)
+        }
+    })
+})
+
+$(document).ready(function() 
+{
+    $(document).on('focus', '.edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan', function()
+    {
         $(".edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan").datepicker({
             autoclose: true,
             language: "id"
@@ -528,7 +579,8 @@ $(document).ready(function() {
     })
 
     //cek jadwal bentrok
-    $(document).on('change', ".edit_ruang, .edit_tgl_kegiatan, .edit_jam_mulai, .edit_jam_selesai, .edit_menit_mulai, .edit_menit_selesai", function(){
+    $(document).on('change', ".edit_ruang, .edit_tgl_kegiatan, .edit_jam_mulai, .edit_jam_selesai, .edit_menit_mulai, .edit_menit_selesai", function()
+    {
         var ruang       = $(this).parent().find('#edit_ruang').val();
         var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val();
         var jam_mulai   = $(this).parent().find('#edit_jam_mulai').val();
