@@ -699,7 +699,7 @@ class RiwayatPinjamMhs extends CI_Controller
         $m = date('n');
         $y = date('Y');
 		//set hari
-		$nama_hari = array( '1' => 'Senin', '2' => 'Selasa', '3' => 'Rabu', '4' => 'Kamis', '5' => 'Jumat', '6' => 'Sabtu' );
+		$nama_hari = array( 0=>'Minggu', 1 => 'Senin', '2' => 'Selasa', '3' => 'Rabu', '4' => 'Kamis', '5' => 'Jumat', '6' => 'Sabtu' );
 		$kd_hari = date("w", mktime(0, 0, 0, $m, $d, $y));
 		$hari = $nama_hari[$kd_hari];
 		//set bulan

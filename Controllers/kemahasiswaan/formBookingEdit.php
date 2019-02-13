@@ -184,4 +184,16 @@ class FormBookingEdit extends CI_Controller
         }
 	}
 
+	public function hapusDokumen()
+	{
+		$nomor 		= $this->input->post('nomor');
+		$field 		= $this->input->post('field');
+		$nama_file 	= $this->input->post('nama_file');
+		$this->formbookingmodel->hapus_dokumen($nomor, $field, $nama_file);
+	}
+
+	public function test_hapus(){
+		//$path = 
+		//unlink('filename');
+	}
 }
