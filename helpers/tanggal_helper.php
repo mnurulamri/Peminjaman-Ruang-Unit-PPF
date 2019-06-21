@@ -48,6 +48,21 @@ if (! function_exists('today'))
 	}	
 }
 
+if (! function_exists('tanggal_sekarang'))
+{
+	function tanggal_sekarang(){
+		$array_bulan = array(
+			'01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei', '06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'
+		);
+		//$tgl = explode('/', $_tgl_kegiatan);
+		$d = date('d');
+		$m = $array_bulan[date('m')];
+		$y = date('Y');
+		$tgl = $d.' '.$m.' '.$y;
+		return $tgl;
+	}
+}
+
 if (! function_exists('dbToTanggal'))
 {
 	function dbToTanggal($tanggal)
@@ -67,6 +82,21 @@ if (! function_exists('dbToTanggal'))
         $tanggal = $hari.', '.$d.' '.$bulan.' '.$y;
         return $tanggal;
 	}	
+}
+
+if (! function_exists('formatDb'))
+{
+	function formatDb($tanggal){
+		$array_bulan = array(
+			'Januari'=>'01','Februari'=>'02','Maret'=>'03','April'=>'04','Mei'=>'05', 'Juni'=>'06','Juli'=>'07','Agustus'=>'08','September'=>'09','Oktober'=>'10','November'=>'11','Desember'=>'12'
+		);
+		$array = explode(' ', $tanggal);
+		$d = $array[0];
+		$m = $array_bulan[$array[1]];
+		$y = $array[2];
+		$tgl = $y.'-'.$m.'-'.$d;
+		return $tgl;
+	}
 }
 /* End of file MY_url_helper.php */
 /* Location: ./application/helpers/MY_url_helper.php */
