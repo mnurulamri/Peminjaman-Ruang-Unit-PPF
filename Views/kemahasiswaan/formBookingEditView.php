@@ -1,12 +1,12 @@
 <?php
-//echo '<pre>';
-//print_r($data_kegiatan);
+echo '<pre>';
+print_r($data_kegiatan);
 //print_r($data_kegiatan_entitas);
 //print_r($data_kegiatan_jenis);
 //print_r($data_kegiatan_kategori);
-//print_r($data_kegiatan_peserta);
+//print_r(cetak_jadwal($ruang, $data_jadwal));
 //print_r($data_jadwal);
-//echo '</pre>';
+echo '</pre>';
 
 foreach ($data_kegiatan as $k => $v) {
     $nomor          = $v['nomor'];
@@ -30,7 +30,13 @@ foreach ($data_kegiatan as $k => $v) {
     $file_undangan  = $v['file_undangan'];
     $file_lampiran  = $v['file_lampiran'];
 }
-        
+
+//set enable browse file
+$disabled_file_tor = (!empty($file_tor)) ? 'disabled' : '';
+$disabled_file_rundown = (!empty($file_rundown)) ? 'disabled' : '';
+$disabled_file_undangan = (!empty($file_undangan)) ? 'disabled' : '';
+$disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
+ 
 ?>
 <input type="text" id="nomor" name="nomor" class="form-control" size="5" value="<?=$nomor?>"/>
 <section class="content" >
@@ -180,7 +186,7 @@ foreach ($data_kegiatan as $k => $v) {
                 <div class="form-group">
                     <label for="jml_peserta" class="col-sm-3 control-label" style="text-align:right">Jumlah Peserta :  </label>
                     <div class="col-sm-9">
-                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" value="jml_peserta" required="">
+                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" value="" required="">
                     </div>                        
                 </div>
                 <div>&nbsp;</div>
@@ -193,30 +199,35 @@ foreach ($data_kegiatan as $k => $v) {
                           <table class="table">
                             <tr>
                                 <td>TOR Acara/Kegiatan</td>
-                                <td><input type="file" name="file_tor" value=""></td>
-                                <td id="file_tor"><?=$file_tor?></td>
+                                <td>
+                                    <input type="file" name="file_tor" value="" <?=$disabled_file_tor?> >
+                                </td>
+                                <td id="file_tor" class="nama_file"><?=$file_tor?></td>
                                 <td>
                                     <?php echo $retVal = (!empty($file_tor)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_tor" data-file="'.$file_tor.'">hapus</button>' : '' ;?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Rundown Acara/Kegiatan</td>
-                                <td><input type="file" name="file_rundown"></td>
-                                <td id="file_rundown"><?=$file_rundown?></td>
+                                <td><input type="file" name="file_rundown" <?=$disabled_file_rundown?> ></td>
+                                <td id="file_rundown" class="nama_file"><?=$file_rundown?></td>
                                 <td>
                                     <?php echo $retVal = (!empty($file_rundown)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_rundown" data-file="'.$file_rundown.'">hapus</button>' : '' ;?>
                                     </td>
                             </tr>
                             <tr><td>Undangan Resmi</td>
-                                <td><input type="file" name="file_undangan"></td>
-                                <td id="file_undangan"><?=$file_undangan?></td>
+                                <td><input type="file" name="file_undangan" <?=$disabled_file_undangan?> ></td>
+                                <td id="file_undangan" class="nama_file"><?=$file_undangan?></td>
                                 <td>
                                     <?php echo $retVal = (!empty($file_undangan)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_undangan" data-file="'.$file_undangan.'">hapus</button>' : '' ;?>
                                 </td>
                             </tr>
-                            <tr><td>Lampiran Penting Lainnya</td>
-                                <td><input type="file" name="file_lampiran"></td>
-                                <td id="file_lampiran"><?=$file_lampiran?></td>
+                            <tr>
+                                <td>Lampiran Penting Lainnya</td>
+                                <td>
+                                    <input type="file" name="file_lampiran" <?=$disabled_file_lampiran?> >
+                                </td>
+                                <td id="file_lampiran" class="nama_file"><?=$file_lampiran?></td>
                                 <td>
                                     <?php echo $retVal = (!empty($file_lampiran)) ? '<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_lampiran" data-file="'.$file_lampiran.'">hapus</button>' : '' ;?>
                                 </td>
@@ -233,31 +244,36 @@ foreach ($data_kegiatan as $k => $v) {
                             <tr>
                                 <td width="25px" style="text-align:center"></td>
                                 <td width="97px" style="text-align:center">Lokasi/Area/Ruangan</td>
-                                <td width="150px" style="text-align:center">Tanggal</td>
+                                <td width="175px" style="text-align:center">Tanggal</td>
                                 <td width="10px">&nbsp;</td>
-                                <td width="120px" style="text-align:center">Mulai</td>
+                                <td width="10px" style="text-align:center" colspan="2">Mulai</td>
                                 <td width="25px">&nbsp;</td>
-                                <td width="150px" style="text-align:center">Selesai</td>
+                                <td width="10px" style="text-align:center"colspan="2">Selesai</td>
                                 <td></td>
                             </tr>
+                            <?php print_r(cetak_jadwal($ruang, $data_jadwal)); ?>
                         </table>
-                    </div>
+                    </div>      
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-3"></div>
                     <div id="edit_jadwal" class="col-sm-9"></div>
                 </div>
-
-                <div class="form-group">
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-9">
-                        <button id="edit_add_row" class='btn-xs btn btn-success'>Tambah Jadwal</button>
-                        <button id="edit_del_row" class='btn-xs btn btn-danger'>Hapus Jadwal</button>
-                        <button id="edit_clear"class='btn-xs btn btn-warning'>Reset</button>
-                    </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-3 col-sm-3"></div>
+                <div class="col-md-9 col-sm-9" style="padding-left:35px">
+                    <button id="edit_add_row" class='btn-xs btn btn-success'>Tambah Jadwal</button>
+                    <button id="edit_del_row" class='btn-xs btn btn-danger'>Hapus Jadwal</button>
+                    <button id="edit_clear"class='btn-xs btn btn-warning'>Reset</button>
                 </div>
-                <div class="pesan-bentrok"></div>
+            </div>                
+        </div>    
+            
+            
+                <div class="pesan-bentrok-edit"></div>
                 <div>&nbsp;</div>
                 <div class="form-group">
                     <label for="kebutuhan" class="col-sm-3 control-label" style="text-align:right">Kebutuhan Tambahan :  </label>
@@ -279,340 +295,16 @@ foreach ($data_kegiatan as $k => $v) {
         <hr>            
           
     </div>
-   <div class="pesan"></div>
+    <div class="pesan"></div>
     <div class="box-footer">
         <div class="alert-pesan alert alert-success" role="alert" style="display:none">Data sudah disimpan..</div>
         <div id="process-info" style="display:none; text-align:center"><img src="<?=base_url();?>assets/images/spinner.gif"/></div>
         <span id="alert-riwayat" class="alert alert-success" role="alert" role="alert" style="display:none">Data sudah disimpan..</span>
         <button type="button" class="btn btn-danger tutup" data-dismiss="modal">Tutup</button>
         <span><button class="update btn btn-info pull-right">Simpan</button></span> <!--   -->
+        <span><button class="test btn btn-info pull-right">test</button></span>
     </div>    
 
 </section>
 
-<script>
-
-//editor
-CKEDITOR.replace('edit_tema')
-CKEDITOR.replace('edit_deskripsi')
-CKEDITOR.replace('edit_tujuan')
-CKEDITOR.replace('edit_pengisi_acara')
-
-$(".update").click(function()
-{
-    nomor           = $('#nomor').val()
-    tgl_proses      = $('#edit_tgl_proses').val()
-    tgl_permohonan  = $('#edit_tgl_permohonan').val()
-    //ruang           = $('#ruang').val();
-    nama_kegiatan   = $('#edit_nama_kegiatan').val()
-    jml_peserta     = $('#edit_jml_peserta').val()
-    nama_peminjam   = $('#edit_nama_peminjam').val()
-    id_peminjam      = $('#edit_id_peminjam').val()
-    unit_kerja      = $('#edit_unit_kerja').val()
-    no_telp         = $('#edit_no_telp').val()
-    email           = $('#edit_email').val()
-    kebutuhan       = $('#edit_kebutuhan').val()
-    catatan         = $('#edit_catatan').val()
-
-    entitas_lainnya = $('#edit_entitas-lainnya').val();
-    jenis_lainnya = $('#edit_jenis-lainnya').val();
-
-    var entitas = $('.edit_entitas:checked').map(function(_, el) {
-        return $(el).val()
-    }).get()
-
-    var kategori = $('.edit_kategori:checked').map(function(_, el) {
-        return $(el).val()
-    }).get()
-
-    var jenis = $('.edit_jenis:checked').map(function(_, el) {
-        return $(el).val()
-    }).get()
-
-    var peserta = $('.edit_peserta:checked').map(function(_, el) {
-        return $(el).val()
-    }).get()
-
-    var tema            = CKEDITOR.instances.tema.getData()
-    var deskripsi       = CKEDITOR.instances.deskripsi.getData()
-    var tujuan          = CKEDITOR.instances.tujuan.getData()
-    var pengisi_acara   = CKEDITOR.instances.pengisi_acara.getData()
-
-    //masukkan tanggal dan waktu kegiatan ke dalam array
-    var event_id = [];
-    $('.edit_event_id').each(function () { 
-        event_id.push($(this).val());
-    });
-
-    var ruang = [];
-    $('.edit_ruang').each(function () { 
-        ruang.push($(this).val());
-    });
-
-    var tgl_kegiatan = [];
-    $('.edit_tgl_kegiatan').each(function () { 
-        tgl_kegiatan.push($(this).val());
-    });
-
-    var jam_mulai = [];
-    $('.edit_jam_mulai').each(function () { 
-        jam_mulai.push($(this).val());
-    });
-
-    var menit_mulai = [];
-    $('.edit_menit_mulai').each(function () { 
-        menit_mulai.push($(this).val());
-    });
-
-    var jam_selesai = [];
-    $('.edit_jam_selesai').each(function () { 
-        jam_selesai.push($(this).val());
-    });
-
-    var menit_selesai = [];
-    $('.edit_menit_selesai').each(function () { 
-        menit_selesai.push($(this).val());
-    });
-
-    var file = $("#edit_upload_form")[0] 
-    var formData = new FormData(file)
-    formData.append("nomor", nomor)
-    formData.append("tgl_proses", tgl_proses)
-    formData.append("tgl_permohonan", tgl_permohonan)
-    formData.append("nama_kegiatan", nama_kegiatan)
-    formData.append("nama_peminjam", nama_peminjam)
-    formData.append("unit_kerja", unit_kerja)
-    formData.append("id_peminjam", id_peminjam)
-    formData.append("no_telp", no_telp)
-    formData.append("email", email)
-    formData.append("jml_peserta", jml_peserta)
-    formData.append("kebutuhan", kebutuhan)
-    formData.append("catatan", catatan)
-        formData.append("entitas", entitas);
-        formData.append("entitas_lainnya", entitas_lainnya);
-        formData.append("kategori", kategori);
-        formData.append("jenis", jenis);
-        formData.append("jenis_lainnya", jenis_lainnya);
-        formData.append("tema", tema);
-        formData.append("deskripsi", deskripsi);
-        formData.append("tujuan", tujuan);
-        formData.append("pengisi_acara", pengisi_acara);
-        formData.append("peserta", peserta);
-        formData.append("event_id", event_id);
-        formData.append("ruang", ruang);  
-        formData.append("tgl_kegiatan", tgl_kegiatan);
-        formData.append("jam_mulai", jam_mulai);
-        formData.append("jam_selesai", jam_selesai);
-        formData.append("menit_mulai", menit_mulai);
-        formData.append("menit_selesai", menit_selesai);
-
-    //update data dan jadwal kegiatan
-    $.ajax({
-        type: "POST",
-        url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBookingEdit/simpan",
-        data: formData,
-        contentType: false,       // The content type used when sending data to the server.
-        cache: false,             // To unable request pages to be cached
-        processData:false,        // To send DOMDocument or non processed data file it is set to false
-        success: function(data) {
-            console.log(data)
-            $(".alert-pesan").fadeIn();
-            $(".alert-pesan").html(data);
-            $(".alert-pesan").fadeOut(2300); 
-        },
-        complete: function(data) {
-            //$("#modal-form").hie("hide");    
-        }           
-    })
-})
-
-var i = 1;
-$("#edit_add_row").click(function()
-{
-    var formattedDate = "<?=today()?>"
-    var ruang = '<?=$vruang?>'; 
-        var text ='<tr>'+
-                '<td class="form-inline">'+
-                    '<input type="checkbox" class="check_box"/>&nbsp;&nbsp;'+
-                    '<input type="hidden" id="edit_event_id" name="edit_event_id" class="edit_event_id" value="">'+
-                     ruang + '&nbsp;&nbsp;' +
-                    '<input type="text" id="edit_tgl_kegiatan" class="edit_tgl_kegiatan form-control" name="edit_tgl_kegiatan" size="10" value="'+formattedDate+'" />&nbsp;&nbsp;'+
-                        '<select name="edit_jam_mulai" id="edit_jam_mulai" class="edit_jam_mulai form-control">'+
-                            '<option value="08">08</option>'+
-                            '<option value="09">09</option>'+
-                            '<option value="10">10</option>'+
-                            '<option value="11">11</option>'+
-                            '<option value="12">12</option>'+
-                            '<option value="13">13</option>'+                                 
-                            '<option value="14">14</option>'+
-                            '<option value="15">15</option>'+
-                            '<option value="16">16</option>'+
-                            '<option value="17">17</option>'+
-                            '<option value="18">18</option>'+
-                            '<option value="19">19</option>'+
-                        '</select>'+
-                        '<select name="edit_menit_mulai" id="edit_menit_mulai" class="edit_menit_mulai form-control">'+
-                            '<option value="00" selected >00</option>'+
-                            '<option value="05">05</option>'+
-                            '<option value="10">10</option>'+
-                            '<option value="15">15</option>'+
-                            '<option value="20">20</option>'+
-                            '<option value="25">25</option>'+
-                            '<option value="30">30</option>'+
-                            '<option value="35">35</option>'+
-                            '<option value="40">40</option>'+
-                            '<option value="45">45</option>'+
-                            '<option value="50">50</option>'+
-                            '<option value="55">55</option>'+
-                        '</select>&nbsp;-&nbsp;'+
-                        '<select name="edit_jam_selesai" id="edit_jam_selesai" class="edit_jam_selesai form-control">'+
-                              '<option value="08">08</option>'+
-                              '<option value="09">09</option>'+
-                              '<option value="10">10</option>'+
-                              '<option value="11">11</option>'+
-                              '<option value="12">12</option>'+
-                              '<option value="13">13</option>'+                                  
-                              '<option value="14">14</option>'+
-                              '<option value="15">15</option>'+
-                              '<option value="16">16</option>'+
-                              '<option value="17">17</option>'+
-                              '<option value="18">18</option>'+
-                              '<option value="19">19</option>'+
-                              '<option value="20">20</option>'+
-                              '<option value="21">21</option>'+
-                        '</select>'+
-                        '<select name="edit_menit_selesai" id="edit_menit_selesai" class="edit_menit_selesai form-control">'+
-                          '<option value="00" selected >00</option>'+
-                          '<option value="05">05</option>'+
-                          '<option value="10">10</option>'+
-                          '<option value="15">15</option>'+
-                          '<option value="20">20</option>'+
-                          '<option value="25">25</option>'+
-                          '<option value="30">30</option>'+
-                          '<option value="35">35</option>'+
-                          '<option value="40">40</option>'+
-                          '<option value="45">45</option>'+
-                          '<option value="50">50</option>'+
-                          '<option value="55">55</option>'+
-                        '</select>'+
-                    '</td>'+
-                '</tr>'; 
-
-            $('#edit_jadwal').append(text);
-            i++;
-})
-
-$("#edit_del_row").click(function()
-{
-    if(!$.trim($('#edit_jadwal').html()).length)
-    {
-        alert ("Now table is empty")
-    }else{
-        $('#test').children('tr').find('input[type=checkbox]:checked').each(function () 
-        {
-            $(this).closest('tr').remove()
-        })
-
-        $('#edit_jadwal').children('tr').find('input[type=checkbox]:checked').each(function () 
-        {
-            $(this).closest('tr').remove()
-        })
-    }
-})
-
-$("#edit_clear").click(function()
-{
-    $('#test tr').empty();
-    $('#edit_jadwal').empty();
-})
-
-$("#edit_jam_selesai").change(function(){
-    var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val()
-    var jam_selesai = $(this).parent().find('#edit_jam_selesai').val()
-    var nama_hari  = namaHari(tgl_kegiatan)
-    
-    //peminjaman ruang pada hari sabtu hanya diperkenankan sampai dengan jam 14.00
-    if (nama_hari == 'Sabtu'){
-        if (jam_selesai > 14){
-            alert('Kegiatan pada hari sabtu hanya diizinkan sampai dengan pukul 14.00 WIB')
-            $(this).parent().find('#edit_jam_selesai').val('14')
-        }
-    }
-})
-
-$(".edit_ruang").change(function(){
-    var nama_ruang = $(this).val()
-    if(nama_ruang == 201 || nama_ruang == 202){
-        alert("Penggunaan ruang ini hanya dikhususkan untuk kegiatan rapat, selanjutnya silahkan berkoordinasi dengan staf sekretariat pimpinan")   
-   }
-   
-})
-
-$(".hapus-dokumen").click(function()
-{
-    var nomor       = $('#nomor').val()
-    var field       = $(this).data("dokumen")
-    var nama_file   = $(this).data("file")
-
-    $.ajax({
-        type: "POST",
-        url: "<?php echo base_url(); ?>kemahasiswaan/formBookingEdit/hapusDokumen",
-        data: {
-            nomor:nomor,  
-            field:field,
-            nama_file:nama_file
-        },
-        success: function(data) {
-            console.log(data)
-        }
-    })
-})
-
-$(document).ready(function() 
-{
-    $(document).on('focus', '.edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan', function()
-    {
-        $(".edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan").datepicker({
-            autoclose: true,
-            language: "id"
-        })
-    })
-
-    //cek jadwal bentrok
-    $(document).on('change', ".edit_ruang, .edit_tgl_kegiatan, .edit_jam_mulai, .edit_jam_selesai, .edit_menit_mulai, .edit_menit_selesai", function()
-    {
-        var ruang       = $(this).parent().find('#edit_ruang').val();
-        var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val();
-        var jam_mulai   = $(this).parent().find('#edit_jam_mulai').val();
-        var jam_selesai = $(this).parent().find('#edit_jam_selesai').val();
-        var menit_mulai = $(this).parent().find('#edit_menit_mulai').val();
-        var menit_selesai = $(this).parent().find('#edit_menit_selesai').val();
-        //alert(ruang + ' ' + tgl_kegiatan + ' ' + jam_mulai + ' ' + menit_mulai + ' ' + jam_selesai + ' ' + menit_selesai); return;
-        
-        $.ajax({
-            type: "POST",
-            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBooking/cekJadwalBentrok",
-            data: {
-                ruang:ruang,  
-                tgl_kegiatan:tgl_kegiatan,
-                jam_mulai:jam_mulai,
-                jam_selesai:jam_selesai,
-                menit_mulai:menit_mulai,
-                menit_selesai:menit_selesai
-            },
-            success: function(data) {
-                $('.pesan-bentrok').html(data);
-                if (data != '') {
-                    //Check to see if there is any text
-                    // If there is no text within the input ten disable the button
-                    $('.simpan').prop('disabled', true);
-                } else {
-                    //If there is text in the input, then enable the button
-                    $('.simpan').prop('disabled', false);
-                }
-            }
-        })
-    })
-})
-
-</script>
+<?=include(APPPATH.'views/kemahasiswaan/formBookingEditScript.php');?> 
