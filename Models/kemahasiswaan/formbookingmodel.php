@@ -46,7 +46,7 @@ class FormBookingModel extends CI_Model
 
     function getDataJadwal($nomor)
     {
-        $sql = "SELECT start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
+        $sql = "SELECT event_id, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
             FROM waktu b, ruang_rapat c 
             WHERE b.ruang = kd_ruang AND nomor = '$nomor'
             ORDER BY YEAR(start_date) DESC, MONTH(start_date) DESC";
