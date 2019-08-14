@@ -178,7 +178,6 @@ $(document).ready(function() {
     $('#add_row').unbind('click').click(function(){
     //$(document).on('click', '#add_row', function(){
         $('#jadwal').unbind('click');  //gak jalan
-alert("test")
 
         var now = new Date()
         months = ['01','02','03','04','05','06','07','08','09','10','11','12']

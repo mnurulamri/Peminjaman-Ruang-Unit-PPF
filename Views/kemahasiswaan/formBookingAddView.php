@@ -242,13 +242,13 @@
                                 </div>
                                 <div>&nbsp;</div>
                                 <div class="form-group">
-                                    <label for="file" class="col-sm-3 control-label" style="text-align:right">Lampiran :<br>Wajib Melampirkan dokumen terkait</label>
+                                    <label for="file" class="col-sm-3 control-label" style="text-align:right">Lampiran :<br>Wajib Melampirkan dokumen terkait<br><i style="color:red; font-size:12px;">Ekstensi file (.jpg, .png, .gif, .pdf) dan tidak lebih dari 1MB</i></label>
                                     <div class="col-sm-9">
                                       <form id="upload_form" enctype="multipart/form-data" method="post">
                                           <input type="hidden" name="action" id="action" value="test action">
                                           <input type="hidden" name="post_foto" id="post_foto" value="test id foto">
                                           <table>
-                                            <tr><td>TOR Acara/Kegiatan</td><td><input type="file" name="file_tor"></td></tr>
+                                            <tr><td>Formulir Permohonan Izin Kegiatan</td><td><input type="file" name="file_tor"></td></tr>
                                             <tr><td>Rundown Acara/Kegiatan</td><td><input type="file" name="file_rundown"></td></tr>
                                             <tr><td>Undangan Resmi</td><td><input type="file" name="file_undangan"></td></tr>
                                             <tr><td>Lampiran Penting Lainnya</td><td><input type="file" name="file_lampiran"></td></tr>

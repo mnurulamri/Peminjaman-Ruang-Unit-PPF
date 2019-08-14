@@ -56,6 +56,7 @@ $(document).ready(function()
 {
     $(".update").click(function()
     {
+    	alert("test")
         nomor           = $('#nomor').val()
         tgl_proses      = $('#edit_tgl_proses').val()
         tgl_permohonan  = $('#edit_tgl_permohonan').val()
@@ -163,6 +164,7 @@ $(document).ready(function()
             formData.append("menit_selesai", menit_selesai);
 console.log(ruang)
         //update data dan jadwal kegiatan
+        
         $.ajax({
             type: "POST",
             url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBookingEdit/simpan",
@@ -177,6 +179,25 @@ console.log(ruang)
                 $(".alert-pesan").fadeOut(2300); 
                 refresh_view_dokumen()
             },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+			        if (jqXHR.status === 0) {
+			            msg = 'Not connect.\n Verify Network.';
+			        } else if (jqXHR.status == 404) {
+			            msg = 'Requested page not found. [404]';
+			        } else if (jqXHR.status == 500) {
+			            msg = 'Internal Server Error [500].';
+			        } else if (exception === 'parsererror') {
+			            msg = 'Requested JSON parse failed.';
+			        } else if (exception === 'timeout') {
+			            msg = 'Time out error.';
+			        } else if (exception === 'abort') {
+			            msg = 'Ajax request aborted.';
+			        } else {
+			            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+			        }
+			        $('.alert-pesan').html(msg);
+			    },
             complete: function(data) {
                 //$("#modal-form").hie("hide");    
             }           
@@ -388,7 +409,7 @@ console.log(ruang)
         var vid = $(this).attr('id');
         var id = vid.split('_');
         var event_id = id[1];
-        
+
         var txt;
         var r = confirm("Anda yakin akan menghapus jadwal ini!");
         if (r == true) {
@@ -407,6 +428,7 @@ console.log(ruang)
         } else {
             txt = "You pressed Cancel!";
         }   
+        
     });
 
     $(document).on("change", "input[name='file_tor']", function(){

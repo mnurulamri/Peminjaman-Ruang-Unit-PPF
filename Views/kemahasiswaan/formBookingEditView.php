@@ -1,12 +1,12 @@
 <?php
-echo '<pre>';
-print_r($data_kegiatan);
+//echo '<pre>';
+//print_r($data_kegiatan);
 //print_r($data_kegiatan_entitas);
 //print_r($data_kegiatan_jenis);
 //print_r($data_kegiatan_kategori);
 //print_r(cetak_jadwal($ruang, $data_jadwal));
 //print_r($data_jadwal);
-echo '</pre>';
+//echo '</pre>';
 
 foreach ($data_kegiatan as $k => $v) {
     $nomor          = $v['nomor'];
@@ -186,19 +186,19 @@ $disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
                 <div class="form-group">
                     <label for="jml_peserta" class="col-sm-3 control-label" style="text-align:right">Jumlah Peserta :  </label>
                     <div class="col-sm-9">
-                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" value="" required="">
+                        <input type="text" id="edit_jml_peserta" name="edit_jml_peserta" placeholder="Jumlah Peserta" class="form-control input-md" value=" <?=$jml_peserta?> " required="">
                     </div>                        
                 </div>
                 <div>&nbsp;</div>
                 <div class="form-group">
-                    <label for="file" class="col-sm-3 control-label" style="text-align:right">Lampiran :<br>Wajib Melampirkan dokumen terkait</label>
+                    <label for="file" class="col-sm-3 control-label" style="text-align:right">Lampiran :<br>Wajib Melampirkan dokumen terkait<br><i style="color:red; font-size:12px;">Ekstensi file (.jpg, .png, .gif, .pdf) dan tidak lebih dari 1MB</i></label>
                     <div class="col-sm-9">
 			          <form id="edit_upload_form" enctype="multipart/form-data" method="post">
 				          <input type="hidden" name="action" id="action" value="test action">
 				          <input type="hidden" name="post_foto" id="post_foto" value="test id foto">
                           <table class="table">
                             <tr>
-                                <td>TOR Acara/Kegiatan</td>
+                                <td>Formulir Permohonan Izin Kegiatan</td>
                                 <td>
                                     <input type="file" name="file_tor" value="" <?=$disabled_file_tor?> >
                                 </td>
@@ -301,8 +301,8 @@ $disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
         <div id="process-info" style="display:none; text-align:center"><img src="<?=base_url();?>assets/images/spinner.gif"/></div>
         <span id="alert-riwayat" class="alert alert-success" role="alert" role="alert" style="display:none">Data sudah disimpan..</span>
         <button type="button" class="btn btn-danger tutup" data-dismiss="modal">Tutup</button>
-        <span><button class="update btn btn-info pull-right">Simpan</button></span> <!--   -->
-        <span><button class="test btn btn-info pull-right">test</button></span>
+        <span><button class="update btn btn-info pull-right">Simpan</button></span> <!--   
+        <span><button class="test btn btn-info pull-right">test</button></span> -->
     </div>    
 
 </section>
