@@ -18,17 +18,12 @@ if (! function_exists('checkbox_entitas'))
 			$data_checkbox = '';
 			$html = '';
 		    foreach ($array_entitas as $key => $value) {
-			
-				if($key==3){
-					$data_checkbox .= '<br>';
-				}
-				
 		        if (!empty($array_checkbox[$value])) {
 		        	//kalo dalam array check box ada datanya maka buat inputan checkbox yang sudah ditandain
 		            $data_checkbox.= '
 		            
 		                <label>            
-		                <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span>'.$value.'
+		                <span style="font-family: wingdings; font-size: 125%; ">&#9745;</span>'.$value.'
 		                </label>
 		            ';
 		        } else {
@@ -36,7 +31,7 @@ if (! function_exists('checkbox_entitas'))
 		            $data_checkbox.= '
 		            
 		                <label>              
-		                    <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span>'.$value.'
+		                    <span style="font-family: wingdings; font-size: 125%;">&#9744;</span>'.$value.'
 		                </label>
 		            ';
 		        }
@@ -47,8 +42,8 @@ if (! function_exists('checkbox_entitas'))
 		                $lainnya = '
 		                
 		                    <label>
-		                        <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span>'.$v['entitas'].'
-		                        <!--<input type="text" id="edit_entitas-lainnya" name="edit_entitas-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['entitas'].'">-->
+		                        <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span>
+		                        <input type="text" id="edit_entitas-lainnya" name="edit_entitas-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['entitas'].'">'.$v['entitas'].'
 		                    </label>
 		                ';
 		            } else {
@@ -174,9 +169,6 @@ if (! function_exists('checkbox_jenis'))
 			//buat variabel data_checkbox untuk menampung data hasil mana yg di check dan mana yg tidak dicheck 
 			$data_checkbox = '';
 		    foreach ($array_jenis as $key => $value) {
-				if($key==5){
-					$data_checkbox .= '<br>';
-				}
 		        if (!empty($array_checkbox[$value])){
 		        	//kalo dalam array check box ada datanya maka buat inputan checkbox yang sudah ditandain
 		            $data_checkbox.= '
@@ -262,46 +254,42 @@ if (! function_exists('checkbox_peserta'))
 			//buat variabel data_checkbox untuk menampung data hasil mana yg di check dan mana yg tidak dicheck 
 			$data_checkbox = '';
 		    foreach ($array_peserta as $key => $value) {
-			
-				if($key!=0){
-					$data_checkbox .= '<br>';
-				}
 		        if (!empty($array_checkbox[$value])){
 		        	//kalo dalam array check box ada datanya maka buat inputan checkbox yang sudah ditandain
 		            $data_checkbox.= '
-		            
+		            <div class="checkbox">
 		                <label>            
 		                <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span>'.$value.'
 		                </label>
-		            ';
+		            </div>';
 		        } else {
 		        	//buat inputan checkbox lainnya yg blm ditandain untuk semua data yg tidak ada dalam array checkbox
 		            $data_checkbox.= '
-		            
+		            <div class="checkbox">
 		                <label>              
 		                    <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span>'.$value.'
 		                </label>
-		            ';
+		            </div>';
 		        }
 
 		        //buat checkbox khusus untuk isian checkbox lainnya
 		        foreach ($data as $k => $v) {
 		            if( $v['peserta'] != 'Internal FISIP UI' AND $v['peserta'] != 'Internal FISIP UI dan Universitas Indonesia' AND $v['peserta'] != 'Umum'){
 		                $lainnya = '
-		                
+		                <div class="checkbox">
 		                    <label>
 		                        <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span>
 		                        <input type="text" id="edit_peserta-lainnya" name="edit_peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="'.$v['jpesertanis'].'">
 		                    </label>
-		                ';
+		                </div>';
 		            } else {
 		                $lainnya = '
-		                
+		                <div class="checkbox">
 		                    <label>                
 		                        <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span>
 		                        <input type="text" id="edit_peserta-lainnya" name="edit_peserta-lainnya" placeholder="Lainnya" class="form-control input-md" value="">
 		                    </label>
-		                <';
+		                </div>';
 		            }
 		        }   
 		    }
@@ -316,11 +304,11 @@ if (! function_exists('checkbox_peserta'))
 
 			foreach ($array_peserta as $key => $value) {
 				$html .= '
-	                
+	                <div class="checkbox">
 	                    <label>
 	                        <span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span> '. $value.'
 	                    </label>
-	                ';
+	                </div>';
 			}
 			/*
 			$html .= '
@@ -484,81 +472,6 @@ if (! function_exists('cetak_jadwal'))
 		}
 		
 		return $data;
-	}
-}
-
-if (! function_exists('checkmark_status'))
-{
-	function checkmark_status($status){
-		if($status==0){
-			$check_setuju = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tunda = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tolak = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$ket = 'blm disetujui';
-		}
-		
-		if($status==1){
-			$check_setuju = '<span style="font-family: wingdings; font-size: 150%;">&#9745;</span> ';
-			$check_tunda = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tolak = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$ket = 'Telah Disetujui Manajer Kemahasiswaan';
-		}
-		
-		if($status==4){
-			$check_setuju = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tunda = '<span style="font-family: wingdings; font-size: 150%;">&#9745;</span> ';
-			$check_tolak = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$ket = 'Ditunda';
-		}
-		
-		if($status==5){
-			$check_setuju = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tunda = '<span style="font-family: wingdings; font-size: 150%;">&#9744;</span> ';
-			$check_tolak = '<span style="font-family: wingdings; font-size: 150%;">&#9745;</span> ';
-			$ket = 'di tolak';
-		}
-		
-		$html ='
-				<table width="100%" height="100%" border="0" cellspacing="0" >
-					<tr>
-						<td style="padding-top: 25px;padding-bottom: 25px; text-align:center;">'.$check_setuju.'Disetujui</td>
-						<td style="padding-top: 25px;padding-bottom: 25px; text-align:center;">'.$check_tunda.'Tunda</td>
-						<td style="padding-top: 25px;padding-bottom: 25px; text-align:center;">'.$check_tolak.'Tidak Disetujui</td>
-					</tr>
-				</table>';
-		return $html;
-	}
-}
-
-if (! function_exists('checkmark_lampiran'))
-{
-	function checkmark_lampiran($file_tor, $file_rundown, $file_undangan, $file_lampiran){
-		if($file_tor!=''){
-			$check_file_tor =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span> Formulir Permohonan Izin Kegiatan</label>';
-		} else {
-			$check_file_tor =  '<label><span style="font-family: wingdings; font-size: 150%;">&#9744;</span> TOR Acara/Kegiatan</label>';
-		}
-		
-		if($file_rundown!=''){
-			$check_file_rundown =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span> Rundown Acara/Kegiatan</label>';
-		} else {
-			$check_file_rundown =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span> Rundown Acara/Kegiatan</label>';
-		}
-		
-		if($file_undangan!=''){
-			$check_file_undangan =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span> Undangan Resmi</label>';
-		} else {
-			$check_file_undangan =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span> Undangan Resmi</label>';
-		}
-		
-		if($file_lampiran!=''){
-			$check_file_lampiran =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9745;</span> Lampiran Penting Lainnya</label>';
-		} else {
-			$check_file_lampiran =  '<label><span style="font-family: wingdings; font-size: 150%; font-weight: bold;">&#9744;</span> Lampiran Penting Lainnya</label>';
-		}
-		$spasi = '&nbsp;&nbsp;&nbsp;&nbsp;';
-		$html = $spasi.$check_file_tor.'<br>'.$spasi.$check_file_rundown.'<br>'.$spasi.$check_file_undangan.'<br>'.$spasi.$check_file_lampiran;
-		return $html;
 	}
 }
 /* End of file MY_url_helper.php */
