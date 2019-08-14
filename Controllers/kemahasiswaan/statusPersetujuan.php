@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class RiwayatPinjamMhs extends CI_Controller 
+class StatusPersetujuan extends CI_Controller 
 {
 	var $hak_akses = null;
 	var $userlogin = null;
@@ -12,25 +12,24 @@ class RiwayatPinjamMhs extends CI_Controller
 		$this->load->database();
 		$this->load->library('service');
 		$this->load->helper('tanggal');
+		$this->load->model('penggunaan/ruangrapatmodel');
+		$this->load->model('kemahasiswaan/statuspinjammodel');
+		$this->load->model('kemahasiswaan/formbookingmodel');
 		$this->load->helper('formBookingEdit');
 		$this->load->helper('cetakJadwal');
-		$this->load->model('penggunaan/ruangrapatmodel');
-		$this->load->model('kemahasiswaan/formbookingmodel');
-		$this->load->model('kemahasiswaan/statuspinjammodel');
+		$this->load->helper('dokumen');
 		$this->load->library('Ajax_pagination');
 		$this->perPage = 10;
 		date_default_timezone_set('Asia/Jakarta');
 
-		$userlogin = ($this->session->userdata['logged_in']['username']);
-		$this->data_header['foto'] = $this->service->getFoto($userlogin);
-		$this->data_header['nama'] = $this->service->getNama($userlogin);
 		//buat test doang --1--
-		#$this->session->userdata['logged_in']['hak_akses'] =0;	
 		#$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
 		#$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
 		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
-		#$this->session->userdata['logged_in']['hak_akses'] =0;
-			
+		#$this->session->userdata['logged_in']['hak_akses'] = 1;
+		$userlogin = ($this->session->userdata['logged_in']['username']);
+		$this->data_header['foto'] = $this->service->getFoto($userlogin);
+		$this->data_header['nama'] = $this->service->getNama($userlogin);
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
@@ -52,162 +51,13 @@ class RiwayatPinjamMhs extends CI_Controller
 
 	public function index()
 	{	
-		$this->template();
-		$tanggal 			= $this->today();
-        $nosurat 			= $this->getToken();
-		$data['tanggal']	= $tanggal;
-		$data['nomor'] 		= $nosurat;
-		$data['form_script'] = $this->selectRuang();
-		$data['start_time']	= $this->waktuMulai();
-		$data['end_time']	= $this->waktuSelesai();
-		$this->load->view('kemahasiswaan/riwayatView', $data);		
-	}
-
-	public function selectRuang(){
-		$data['vruang'] 		= $this->getFieldRuang();
-		$data['today'] 		= $this->today();
-		return $data['form_script'] 	= $this->load->view('kemahasiswaan/formBookingScript', $data, true);		
-	}
-
-	public function getFieldRuang($nm_ruang='')
-	{
-		//set ruang berdasarkan hak akses
-		$hak_akses = ($this->session->userdata['logged_in']['hak_akses']);
-		if($hak_akses == 1){ //ruang untuk admin
-			$ruang = $this->ruangrapatmodel->getRuang();
-		} else {
-			$ruang = $this->ruangrapatmodel->getRuangUser(); //untuk mengeluarkan ruang F.201
-		}
-
-		$html='<select id="ruang" name="ruang" class="ruang form-control" style="width: 100px">';
-		foreach ($ruang as $k => $v) {
-			if($v->nm_ruang == $nm_ruang){
-				$html.= '<option value="'.$v->kd_ruang.'" selected >'.$v->nm_ruang.'</option>';
-			} else {
-				$html.= '<option value="'.$v->kd_ruang.'">'.$v->nm_ruang.'</option>';
-			}			
-		}
-		$html.='</select>';
-		return $html;
-	}
-
-	public function getRuang()
-	{  //form select ruang
-		$ruang = $this->ruangrapatmodel->getRuang();
-
-		$html='<select id="ruang_+i + " name="ruang" class="ruang form-control" style="width: 100px">';
-		foreach ($ruang as $k => $v) {
-			$html.= '<option value="'.$v->kd_ruang.'">'.$v->nm_ruang.'</option>';
-		}
-		$html.='</select>';
-		return $html;
-	}
-
-	/*public function tanggalToDb($tgl_kegiatan)
-	{
-		$bulan = array('Januari','Februari','Maret','April','Mei', 'Juni','Juli','Agustus','September','Oktober','Nopember','Desember');
-		$tgl_array = explode(" ", $tgl_kegiatan);
-		$d = $tgl_array[1];
-		$month = array_search($tgl_array[2], $bulan)+1;
-		$m = (strlen($month)==2) ? $month : '0'.$month; 
-		$y = $tgl_array[3];
-		$tgl = $y."-".$m."-".$d;
-		$tgl_kegiatan = $tgl;
-		return $tgl;
-	}*/
-
-	public function waktuMulai()
-	{
-		$jam_mulai = '08';
-		$start = '<select name="jam_mulai" id="jam_mulai" class="jam_mulai cek-bentrok form-control">';
-		for ($i=8; $i<24; $i++) {
-			$retVal = (strlen($i)==1) ? '0'.$i : $i ;
-			$option = ($i==$jam_mulai) ? '<option value="'.$retVal.'" selected>'.$retVal.'</option>' : '<option>'.$retVal.'</option>' ;
-			$start.= $option;
-		}
-		$start.= '</select>';
-		$menit_mulai = '00';
-		$start.= '<select name="menit_mulai" id="menit_mulai" class="menit_mulai cek-bentrok form-control">'; //menit awal
-		for ($i=0; $i<61; $i+=5) { 
-			$retVal = (strlen($i)==1) ? '0'.$i : $i ;
-			$option = ($i==$menit_mulai) ? '<option value="'.$retVal.'" selected>'.$retVal.'</option>' : '<option>'.$retVal.'</option>' ;
-			$start.= $option;
-		}
-		$start.= '</select>';
-		return $start;
-	}
-
-	public function waktuSelesai()
-	{
-		$end = '<select name="jam_selesai" id="jam_selesai" class="jam_selesai cek-bentrok form-control">';
-		$jam_akhir = '09';
-		for ($i=8; $i<24; $i++) {
-			$retVal = (strlen($i)==1) ? '0'.$i : $i ;
-			$option = ($i==$jam_akhir) ? '<option value="'.$retVal.'" selected>'.$retVal.'</option>' : '<option>'.$retVal.'</option>' ;
-			$end.= $option;
-		}
-		$end.= '</select>';
-		$menit_akhir = '00';
-		$end.= '<select name="menit_selesai" id="menit_selesai" class="menit_selesai cek-bentrok form-control">'; //menit akhir
-		for ($i=0; $i<61; $i+=5) { 
-			$retVal = (strlen($i)==1) ? '0'.$i : $i ;
-			$option = ($i==$menit_akhir) ? '<option value="'.$retVal.'" selected>'.$retVal.'</option>' : '<option>'.$retVal.'</option>' ;
-			$end.= $option;
-		}
-		$end.= '</select>';
-		return $end;
-	}
-
-	public function today()
-	{
-		//set tanggal
-        $d = date('d');
-        $m = date('n');
-        $y = date('Y');
-		//set hari
-		$nama_hari = array( 0=>'Minggu', 1 => 'Senin', '2' => 'Selasa', '3' => 'Rabu', '4' => 'Kamis', '5' => 'Jumat', '6' => 'Sabtu' );
-		$kd_hari = date("w", mktime(0, 0, 0, $m, $d, $y));
-		$hari = $nama_hari[$kd_hari];
-		//set bulan
-		$nama_bulan = array(' ','Januari','Februari','Maret','April','Mei', 'Juni','Juli','Agustus','September','Oktober','November','Desember');
-		$bulan = $nama_bulan[$m];
-        $tanggal = $hari.', '.$d.' '.$bulan.' '.$y;
-        return $tanggal;
-	}
-	
-	function validasiEmail($email=NULL) {
-    	return (preg_match("/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/",$email) ? "$email adalah email yang valid" : "$email adalah email yang tidak valid");
-	}
-
-	/*public function format_tanggal($_tgl_kegiatan){
-		$tgl = explode('/', $_tgl_kegiatan);
-		$d = $tgl[1];
-		$m = $tgl[0];
-		$y = $tgl[2];
-		$tgl_kegiatan = $y.'-'.$m.'-'.$d;
-		return $tgl_kegiatan;
-	}*/
-	
-	public function riwayatPinjam(){        
-        //load the view
-        $userlogin = ($this->session->userdata['logged_in']['username']);
-		$data_header['foto'] = $this->service->getFoto($userlogin);
-		$data_header['nama'] = $this->service->getNama($userlogin);
-		$data['ruang'] 		= $this->statuspinjammodel->getRuang();
-		$data['menu'] 		= $this->load->view('layout/3_menu', $data, true);		
-		$data['script'] 	= $this->load->view('layout/template-2', null, true);
-		$data['data'] 		= $this->statuspinjammodel->getRowsTest();
-		//$data['data_jadwal'] 		= $this->statuspinjammodel->getJadwal();
-		$this->load->view('layout/1-head-title');
-		$this->load->view('layout/2-header', $data_header);		
-		$this->load->view('layout/3-menu', $data);
-        $this->load->view('kemahasiswaan/ajax-riwayat-pinjam-index', $data);
+		$this->template();		
+		$this->load->view('kemahasiswaan/statusPersetujuanView');		
 	}
 
     function ajaxRiwayatPinjam(){
-    	$data['data_jadwal'] = $this->statuspinjammodel->getJadwal($this->username);
+    	$data['data_jadwal'] = $this->statuspinjammodel->getListStatusPinjam();
         $conditions = array();
-        $conditions['username'] = $this->username;
         
         //calc offset number
         $page = $this->input->post('page');
@@ -228,11 +78,11 @@ class RiwayatPinjamMhs extends CI_Controller
         }
         
         //total rows count
-        $totalRec = count($this->statuspinjammodel->getRowsTest($conditions));
+        $totalRec = count($this->statuspinjammodel->getRows($conditions));
         
         //pagination configuration
         $config['target']      = '#postList';
-        $config['base_url']    = base_url().'index.php/kemahasiswaan/RiwayatPinjamMhs/ajaxRiwayatPinjam';
+        $config['base_url']    = base_url().'index.php/kemahasiswaan/statusPersetujuan/ajaxRiwayatPinjam';
         $config['total_rows']  = $totalRec;
         $config['per_page']    = $this->perPage;
         $config['uri_segment']   = 4;
@@ -264,10 +114,10 @@ class RiwayatPinjamMhs extends CI_Controller
         $conditions['limit'] = $this->perPage;
         
         //get posts data
-        $data['posts'] = $this->statuspinjammodel->getRowsTest($conditions);
+        $data['posts'] = $this->statuspinjammodel->getRows($conditions);
         $data['offset'] = $offset;
         //load the view
-        $this->load->view('kemahasiswaan/ajax-riwayat-pinjam-data', $data, false);
+        $this->load->view('kemahasiswaan/ajax-status-persetujuan-data', $data, false);
     }
 
     function viewDokumen(){
@@ -372,12 +222,85 @@ class RiwayatPinjamMhs extends CI_Controller
 		//$data['data'] = $array;
 		//$this->load->view('penggunaan/test', $data);
 	}
-	/*
-	public function getDataKonfirmasi()
+
+	public function statusKonfirmasi()
+	{  //form edit pengajuan
+		$nomor 			= $this->input->post('nomor');
+		$data['data'] 	= $this->getDataFormPengajuan($nomor);
+		//$data['data_kegiatan'] 	= $this->ruangrapatmodel->getKegiatan($nomor);
+		//$data['data_jadwal'] 	= $this->ruangrapatmodel->getJadwalRuang($nomor);
+		$this->load->view('penggunaan/statusKonfirmasi', $data);
+		//print_r($nomor);
+	}
+
+	public function statusKonfirmasiPersetujuan(){
+		$nomor = $this->input->post('nomor');
+		$alasan = $this->input->post('alasan');
+		$jenis_persetujuan = $this->input->post('jenis_persetujuan');
+
+		switch ($jenis_persetujuan) {
+			case 'tunda':
+				$ket_status = '<span style="color:#C85EC7">Ditunda</span>';
+				$status = 4;
+				break;
+			case 'tolak':
+				$ket_status = '<span style="color:#808000">Ditolak</span>';
+				$status = 5;
+				break;
+			case 'setuju':
+				$ket_status = '<span style="color:#009966">Menunggu Persetujuan Wakil Manajer PPF</span>';
+				$status = 1;
+				break;
+			default:
+				$ket_status = '???';
+				break;
+		}
+
+		$data = array(
+			'nomor' => $nomor,
+			'status' => $status,
+			'alasan' => $alasan,
+		);
+		$this->formbookingmodel->updateKegiatan($nomor, $data);
+
+		$view_screen = array(
+			'keterangan' => '<span style="color:#009966;font-size:11px;">'.$ket_status.'<i>'.$alasan.'</i></span>'
+		);
+		echo json_encode($view_screen);
+		
+		/*
+		$id_kegiatan = $this->input->post('id_kegiatan');
+		$status 	 = $this->input->post('status');
+		$no_surat 	 = $this->input->post('no_surat');
+
+		switch ($status) {
+			case 1:
+				$ket_status = '<span style="color:#C85EC7">Menunggu Persetujuan Koordinator PPF</span>';
+				break;
+			case 2:
+				$ket_status = '<span style="color:#808000">Menunggu Persetujuan Wakil Manajer PPF</span>';
+				break;
+			case 3:
+				$ket_status = '<span style="color:#009966">Disetujui</span>';
+				break;
+			default:
+				$ket_status = '???';
+				break;
+		}
+		
+		$data = array(
+			'status' => $status,
+			'no_surat' => $no_surat
+		);
+		echo $no_surat.'|'.$ket_status;
+		$this->ruangrapatmodel->editKegiatan($data, $id_kegiatan);
+		*/
+	}
+	
+	public function getData()
 	{  
 		//menampilkan isian data pada edit form peminjaman
 		$nomor = $this->input->post('nomor');
-		
 		$data['data_kegiatan'] = $this->formbookingmodel->getDataKegiatan($nomor);
 		$data['data_kegiatan_entitas'] = $this->formbookingmodel->getDataKegiatanEntitas($nomor);
 		$data['data_kegiatan_jenis'] = $this->formbookingmodel->getDataKegiatanJenis($nomor);
@@ -386,10 +309,9 @@ class RiwayatPinjamMhs extends CI_Controller
 		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
 		$ruang = $this->ruangrapatmodel->getRuang();
 		$data['ruang'] 		= $ruang;
-		//echo '<pre>'; print_r($data); echo '</pre>';
 		$this->load->view('kemahasiswaan/statusPersetujuanKonfirmasi', $data);
 	}
-	*/
+
 	function tanggal($parameter){
 
 		$array_hari = array('Sun'=>'Minggu', 'Mon'=>'Senin', 'Tue'=>'Selasa', 'Wed'=>'Rabu', 'Thu'=>'Kamis', 'Fri'=>'Jumat', 'Sat'=>'Sabtu');

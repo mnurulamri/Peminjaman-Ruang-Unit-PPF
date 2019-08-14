@@ -13,13 +13,15 @@ class FormBooking extends CI_Controller
 		$this->load->library('service');
 		$this->load->helper('tanggal');
 		$this->load->model('penggunaan/ruangrapatmodel');
+		$this->load->model('kemahasiswaan/formbookingmodel');
 		date_default_timezone_set('Asia/Jakarta');
 
 		//buat test doang --1--
-		$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
-		$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
-		$this->session->userdata['logged_in']['username'] = 'mnurulamri';
-		$this->session->userdata['logged_in']['hak_akses'] = 0;				
+		$userlogin = ($this->session->userdata['logged_in']['username']);
+		$this->data_header['foto'] = $this->service->getFoto($userlogin);
+		$this->data_header['nama'] = $this->service->getNama($userlogin);
+		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
+		#$this->session->userdata['logged_in']['hak_akses'] = 0;				
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
@@ -50,6 +52,12 @@ class FormBooking extends CI_Controller
 		$data['start_time']	= $this->waktuMulai();
 		$data['end_time']	= $this->waktuSelesai();
 		$this->load->view('kemahasiswaan/formBookingView', $data);		
+	}
+
+	public function add()
+	{
+		//$this->load->view('kemahasiswaan/formBookingAddView');
+		echo "test";
 	}
 
 	public function selectRuang(){
@@ -141,7 +149,7 @@ class FormBooking extends CI_Controller
 			$data_peserta[] = $value;
 		}
 
-		$this->ruangrapatmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
+		$this->formbookingmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
 
 		$this->editJadwal($nomor);
 
@@ -155,8 +163,9 @@ class FormBooking extends CI_Controller
         	if($value['name']){
 	            //$config['file_name']    = $key;
 	            $config['upload_path']   = './dokumen/kemahasiswaan/';
-	            $config['allowed_types'] = 'gif|jpg|png|svg|pdf';  
-	            $config['max_size']		 = '50000'; // KB	
+	            $config['allowed_types'] = 'gif|jpg|jpeg|png|svg|pdf';
+	            $config['overwrite']	= true;
+	            $config['max_size']		 = 500000; // KB	
 
 	            $this->load->library('upload');
 	            $this->upload->initialize($config);  
@@ -168,7 +177,7 @@ class FormBooking extends CI_Controller
 	            	//proses update ke database 
 	            	$data = array($key => $file['file_name']);
 
-	            	$this->ruangrapatmodel->edit_dokumen($nomor, $data); 
+	            	$this->formbookingmodel->edit_dokumen($nomor, $data); 
 	            } else {
 	                echo "<pre>";
 	                print_r($this->upload->display_errors());
@@ -177,7 +186,7 @@ class FormBooking extends CI_Controller
         	}            
         }
 	}
-
+/*
 	public function editKegiatan(){
 		//fetch input data form
 		$id_kegiatan	= $this->input->post('id_kegiatan');
@@ -218,7 +227,7 @@ class FormBooking extends CI_Controller
 		//echo '<div>event_id'.$event_id.' data sudah di simpan!...</div>';
 		$this->ruangrapatmodel->editKegiatan($data, $id_kegiatan);
 	}
-
+*/
 	public function editJadwal($nomor)
 	{  //edit dari form pengajuan
 
@@ -306,6 +315,11 @@ class FormBooking extends CI_Controller
 			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
 			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
 
+			$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+			mysql_query($sql) or die(mysql_error());
+			echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
+			
+			/*
 			if ($ruang == 236 OR $ruang == 237) {
 				# code...
 			} else {
@@ -347,6 +361,7 @@ class FormBooking extends CI_Controller
 				echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
 				//echo '<pre>'; print_r($sql); echo '</pre>';
 			}
+			*/
 		}
 		
 		//tutup modal bila sudah tidak ada jadwal yang bentrok
@@ -355,7 +370,7 @@ class FormBooking extends CI_Controller
 		}
 	}
 
-
+/*
 	public function formEdit()
 	{  //menampilkan isian data pada edit form peminjaman
 		//$nomor = $this->uri->segment(4);
@@ -521,7 +536,7 @@ class FormBooking extends CI_Controller
 		}
 		
 	}
-	
+*/	
 	public function cekJadwalBentrok()
 	{
 
@@ -708,6 +723,14 @@ class FormBooking extends CI_Controller
 	
 	function validasiEmail($email=NULL) {
     	return (preg_match("/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/",$email) ? "$email adalah email yang valid" : "$email adalah email yang tidak valid");
+	}
+
+    public function deleteKegiatan()
+	{
+		#delete data kegiatan dan jadwal
+		$nomor = $this->input->post('nomor');
+		$this->formbookingmodel->deleteKegiatan($nomor);
+
 	}
 
 	/*public function format_tanggal($_tgl_kegiatan){

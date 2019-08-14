@@ -14,12 +14,16 @@ class FormBookingEdit extends CI_Controller
 		$this->load->library('Ajax_pagination');
 		$this->perPage = 10;
 		date_default_timezone_set('Asia/Jakarta');
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 		//buat test doang --1--
-		$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
-		$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
-		$this->session->userdata['logged_in']['username'] = 'mnurulamri';
-		$this->session->userdata['logged_in']['hak_akses'] = 0;				
+		#$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
+		#$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
+		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
+		#$this->session->userdata['logged_in']['hak_akses'] = 0;
+		$userlogin = ($this->session->userdata['logged_in']['username']);
+		$this->data_header['foto'] = $this->service->getFoto($userlogin);
+		$this->data_header['nama'] = $this->service->getNama($userlogin);
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
@@ -35,10 +39,31 @@ class FormBookingEdit extends CI_Controller
 		$data['data_kegiatan_kategori'] = $this->formbookingmodel->getDataKegiatanKategori($nomor);
 		$data['data_kegiatan_peserta'] = $this->formbookingmodel->getDataKegiatanPeserta($nomor);
 		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
-		$data['vruang'] 		= $this->getFieldRuang();
+		$data['ruang_new'] = $this->getRuangAddRow();;
+
+		//set ruang berdasarkan hak akses
+		$hak_akses = ($this->session->userdata['logged_in']['hak_akses']);
+		if($hak_akses == 1){ //ruang untuk admin
+			$ruang = $this->ruangrapatmodel->getRuang();
+		} else {
+			$ruang = $this->ruangrapatmodel->getRuangUser(); //untuk mengeluarkan ruang F.201
+		}
+		$data['ruang'] 		= $ruang;
+		
 		$this->load->view('kemahasiswaan/formBookingEditView', $data);
 	}
 
+	public function getRuangAddRow(){
+		$ruang = $this->ruangrapatmodel->getRuang();
+
+		$html='';
+		foreach ($ruang as $k => $v) {
+			$html.= '<option value="'.$v->kd_ruang.'">'.$v->nm_ruang.'</option>';
+		}
+		return $html;		
+	}	
+
+	/*
 	public function getFieldRuang($nm_ruang='')
 	{
 		//set ruang berdasarkan hak akses
@@ -60,7 +85,7 @@ class FormBookingEdit extends CI_Controller
 		$html.='</select>';
 		return $html;
 	}
-
+	*/
 	public function simpan()
 	{
 		//set variabel insert kegiatan
@@ -141,28 +166,133 @@ class FormBookingEdit extends CI_Controller
 			$data_peserta[] = $value;
 		}
 
-		//$this->formbookingmodel->updateKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
+		//edit jadwal
+		$event_id		= $this->input->post('event_id');
+		$ruang 			= $this->input->post('ruang');
+		$_tgl_kegiatan 	= $this->input->post('tgl_kegiatan');
+		$jam_awal 		= $this->input->post('jam_mulai');
+		$menit_awal 	= $this->input->post('menit_mulai');
+		$jam_akhir 		= $this->input->post('jam_selesai');
+		$menit_akhir 	= $this->input->post('menit_selesai');
+
+		$array = array();
+		//event_id
+		$event_id = explode(",", $event_id);
+		$i=0;		
+		foreach ($event_id as $k => $v) {
+			$array[$i]['event_id'] = $v;
+			$i++;
+		}
+
+		//ruang
+ 		$ruang = explode(",", $ruang);
+		$i=0;		
+		foreach ($ruang as $k => $v) {
+			$array[$i]['ruang'] = $v;
+			$i++;
+		}
+
+		//tanggal kegiatan
+		$temp = str_replace(', ', '|', $_tgl_kegiatan);
+        $_tgl_kegiatan = explode(",", $temp);
+       
+		$i=0;
+		foreach ($_tgl_kegiatan as $k => $v) {
+			$v = str_replace('|', ', ', $v);
+			$tgl_kegiatan = tanggalToDb($v);
+			$array[$i]['tgl_kegiatan'] = $tgl_kegiatan;
+			$array[$i]['nomor'] = $nomor;
+			//$array[$i]['event_id'] = $event_id;
+			$i++;
+		}
+
+		//jam mulai
+		$jam_awal = explode(",", $jam_awal);
+		$i=0;		
+		foreach ($jam_awal as $k => $v) {
+			$array[$i]['jam_awal'] = $v;
+			$i++;
+		}
+
+		//jam akhir
+		$jam_akhir = explode(",", $jam_akhir);
+		$i=0;		
+		foreach ($jam_akhir as $k => $v) {
+			$array[$i]['jam_akhir'] = $v;
+			$i++;
+		}
+		
+		//menit awal
+		$menit_awal = explode(",", $menit_awal);
+		$i=0;
+		foreach ($menit_awal as $k => $v) {
+			$array[$i]['menit_awal'] = $v;
+			$i++;
+		}
+		
+		//menit selesai
+		$menit_akhir = explode(",", $menit_akhir);
+		$i=0;		
+		foreach ($menit_akhir as $k => $v) {
+			$array[$i]['menit_akhir'] = $v;
+			$i++;
+		}
+
+		$i=0;
+		foreach ($array as $k => $v) {
+
+			$event_id = $v['event_id'];
+			$ruang = $v['ruang'];
+			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
+			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
+
+			/*$data_jadwal[$i] = array(
+				'event_id' => $v['event_id'],
+				'nomor' => $nomor,
+				'ruang' => $v['ruang'],
+				'start_date' => $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'],
+				'end_date' => $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir']
+			);*/
+			$i++;
+			$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+			mysql_query($sql) or die(mysql_error());
+		}
+
+		$this->formbookingmodel->updateKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
+		$this->upload($_FILES, $nomor);
+		
+		//$this->testing($data_kegiatan);
+		//$this->testing($data_jadwal);
+		
 
 		//$this->editJadwal($nomor);
+		//
+		//$values = '';
+		//foreach ($data_jadwal as $key => $value) {
+			//$values[]= '('.implode(", ", $value).')'; 
+		//}
+		//$data = implode(',', $values);
+		
+		//$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES $data";
+		//mysql_query($sql) or die(mysql_error());
+		//$this->testing($data);
+		
 
-		$this->upload($_FILES, $nomor);
-		//echo '<pre>';
-		//print_r($data_peserta);
-		//echo '</pre>';
 	}
 
 	public function upload($files, $nomor)
 	{       
         //kosongkan record dokumen dulu
-        $this->formbookingmodel->clear_dokumen($nomor);
+        //$this->formbookingmodel->clear_dokumen($nomor);  //bug -> sat edit dokumen ilang semua, file dokumen masih ada
 
         foreach ($files as $key => $value) { 
 
         	if($value['name']){
 	            //$config['file_name']    = $key;
 	            $config['upload_path']   = './dokumen/kemahasiswaan/';
-	            $config['allowed_types'] = 'gif|jpg|png|svg|pdf';  
-	            $config['max_size']		 = '50000'; // KB	
+	            $config['allowed_types'] = 'gif|jpg|jpeg|png|svg|pdf';  
+	            $config['overwrite']	= true;
+	            $config['max_size']		 = 5000000; // KB	
 
 	            $this->load->library('upload');
 	            $this->upload->initialize($config);  
@@ -195,5 +325,11 @@ class FormBookingEdit extends CI_Controller
 	public function test_hapus(){
 		//$path = 
 		//unlink('filename');
+	}
+
+	public function testing($data){
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
 	}
 }
