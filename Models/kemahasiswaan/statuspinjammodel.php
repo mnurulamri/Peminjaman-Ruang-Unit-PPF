@@ -47,9 +47,9 @@ class statusPinjamModel extends CI_Model
                  */
         
         $this->db->select('*')
-                 ->from('kegiatan')
+                 ->from('kegiatan_testing')
                  ->where('flag_ppaa = 0 and status = 0')
-                 ->where("nomor IN (SELECT DISTINCT nomor FROM waktu WHERE start_date >= CURDATE())", NULL, FALSE);
+                 ->where("nomor IN (SELECT DISTINCT nomor FROM waktu_testing WHERE start_date >= CURDATE())", NULL, FALSE);
 
         //filter data by searched keywords
         if(!empty($params['search']['keywords'])){
@@ -77,7 +77,7 @@ class statusPinjamModel extends CI_Model
     function getListStatusPinjam()
     {
         $sql = "SELECT id_kegiatan, a.nomor as nomor, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
-                FROM kegiatan a, waktu b, ruang_rapat c 
+                FROM kegiatan_testing a, waktu_testing b, ruang_rapat c 
                 WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()
                 ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
         $query = $this->db->query($sql);
@@ -109,7 +109,7 @@ class statusPinjamModel extends CI_Model
         $this->db->order_by('id_kegiatan','desc');*/
         $username = $params['username'];
         $this->db->select("id_kegiatan, event_name, prodi, no_surat, status, nomor, file_tor, file_rundown, file_undangan, file_lampiran, username, flag_cetak, alasan");
-        $this->db->from("view_kegiatan");
+        $this->db->from("view_kegiatan_testing");
         $this->db->where("username = '$username'");
 
         //filter data by searched keywords
@@ -138,7 +138,7 @@ class statusPinjamModel extends CI_Model
     function getJadwal($username)
     {
         $sql = "SELECT id_kegiatan, a.nomor as nomor, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
-                FROM kegiatan a, waktu b, ruang_rapat c 
+                FROM kegiatan_testing a, waktu_testing b, ruang_rapat c 
                 WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE() AND username = '$username'
                 ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
         $query = $this->db->query($sql);

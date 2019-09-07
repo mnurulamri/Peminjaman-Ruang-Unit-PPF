@@ -11,57 +11,57 @@ class FormBookingModel extends CI_Model
 
     function getDataKegiatan($nomor)
     {
-        $sql = "SELECT * FROM kegiatan WHERE nomor = '$nomor'";
+        $sql = "SELECT * FROM kegiatan_testing WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function getDataKegiatanEntitas($nomor)
     {
-        $sql = "SELECT * FROM kegiatan_entitas WHERE nomor = '$nomor'";
+        $sql = "SELECT * FROM x_kegiatan_entitas WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function getDataKegiatanJenis($nomor)
     {
-        $sql = "SELECT * FROM kegiatan_jenis WHERE nomor = '$nomor'";
+        $sql = "SELECT * FROM x_kegiatan_jenis WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function getDataKegiatanKategori($nomor)
     {
-        $sql = "SELECT * FROM kegiatan_kategori WHERE nomor = '$nomor'";
+        $sql = "SELECT * FROM x_kegiatan_kategori WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function getDataKegiatanPeserta($nomor)
     {
-        $sql = "SELECT * FROM kegiatan_peserta WHERE nomor = '$nomor'";
+        $sql = "SELECT * FROM x_kegiatan_peserta WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function getDataJadwal($nomor)
     {
-        $sql = "SELECT event_id, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
+        /*$sql = "SELECT event_id, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
             FROM waktu b, ruang_rapat c 
             WHERE b.ruang = kd_ruang AND nomor = '$nomor'
-            ORDER BY YEAR(start_date) DESC, MONTH(start_date) DESC";
-        /*$sql = "SELECT GROUP_CONCAT(nm_ruang SEPARATOR ', ') as ruangan, start_date, end_date, b.kd_ruang as kd_ruang, event_id, nm_ruang 
-            FROM waktu a, ruang_rapat b
+            ORDER BY YEAR(start_date) DESC, MONTH(start_date) DESC";*/
+        $sql = "SELECT GROUP_CONCAT(nm_ruang SEPARATOR ', ') as ruangan, start_date, end_date, b.kd_ruang as kd_ruang, event_id, nm_ruang 
+            FROM waktu_testing a, ruang_rapat b
             WHERE ruang = kd_ruang AND nomor = '$nomor' 
             GROUP BY CONCAT(start_date, end_date)
-            ORDER BY start_date, kd_ruang";*/
+            ORDER BY start_date, kd_ruang";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
     function insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta){
         //simpan data kegiatan
-        $this->db->insert('kegiatan', $data_kegiatan);
+        $this->db->insert('kegiatan_testing', $data_kegiatan);
 
         //simpan data entitas kegiatan
         foreach ($data_entitas as $key => $value) {
@@ -70,7 +70,7 @@ class FormBookingModel extends CI_Model
                 'entitas' => $value
             );
 
-            $this->db->insert('kegiatan_entitas', $data);
+            $this->db->insert('x_kegiatan_entitas', $data);
         }
 
         //simpan data kategori kegiatan
@@ -80,7 +80,7 @@ class FormBookingModel extends CI_Model
                 'kategori' => $value
             );
 
-            $this->db->insert('kegiatan_kategori', $data);
+            $this->db->insert('x_kegiatan_kategori', $data);
         }
 
         //simpan data jenis kegiatan
@@ -90,7 +90,7 @@ class FormBookingModel extends CI_Model
                 'jenis' => $value
             );
 
-            $this->db->insert('kegiatan_jenis', $data);
+            $this->db->insert('x_kegiatan_jenis', $data);
         }
 
         //simpan data peserta
@@ -100,84 +100,84 @@ class FormBookingModel extends CI_Model
                 'peserta' => $value
             );
 
-            $this->db->insert('kegiatan_peserta', $data);
+            $this->db->insert('x_kegiatan_peserta', $data);
         }
     }
 
     function updateKegiatan($nomor, $data){
         $this->db->where('nomor', $nomor);
-        $this->db->update('kegiatan', $data); 
+        $this->db->update('kegiatan_testing', $data); 
         //echo 'data sudah disimpan!';
     }
 
     function updateKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta){
         //update data kegiatan
         $this->db->where('nomor', $nomor);
-        $this->db->update('kegiatan', $data_kegiatan); 
+        $this->db->update('kegiatan_testing', $data_kegiatan); 
 
         //update data entitas kegiatan
-        $sql = "DELETE FROM kegiatan_entitas WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_entitas WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         foreach ($data_entitas as $key => $value) {
             $data = array(
                 'nomor' => $nomor,
                 'entitas' => $value
             );
-            $this->db->insert('kegiatan_entitas', $data);
+            $this->db->insert('x_kegiatan_entitas', $data);
         }
 
         //update data kategori kegiatan
-        $sql = "DELETE FROM kegiatan_kategori WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_kategori WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         foreach ($data_kategori as $key => $value) {
             $data = array(
                 'nomor' => $nomor,
                 'kategori' => $value
             );
-           $this->db->insert('kegiatan_kategori', $data);
+           $this->db->insert('x_kegiatan_kategori', $data);
         }
 
         //update data jenis kegiatan
-        $sql = "DELETE FROM kegiatan_jenis WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_jenis WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         foreach ($data_jenis as $key => $value) {
             $data = array(
                 'nomor' => $nomor,
                 'jenis' => $value
             );
-            $this->db->insert('kegiatan_jenis', $data);
+            $this->db->insert('x_kegiatan_jenis', $data);
         }
 
         //update data peserta
-        $sql = "DELETE FROM kegiatan_peserta WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_peserta WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         foreach ($data_peserta as $key => $value) {
             $data = array(
                 'nomor' => $nomor,
                 'peserta' => $value
             );
-            $this->db->insert('kegiatan_peserta', $data);
+            $this->db->insert('x_kegiatan_peserta', $data);
         }
     }
 
     function deleteKegiatan($nomor)
     {
         #delete record table
-        $sql = "DELETE FROM kegiatan WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM kegiatan_testing WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
-        $sql = "DELETE FROM kegiatan_entitas WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_entitas WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
-        $sql = "DELETE FROM kegiatan_kategori WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_kategori WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
-        $sql = "DELETE FROM kegiatan_jenis WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_jenis WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
-        $sql = "DELETE FROM kegiatan_peserta WHERE nomor = '$nomor'";
+        $sql = "DELETE FROM x_kegiatan_peserta WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
 
         #delete data dokumen
         $path = $_SERVER['DOCUMENT_ROOT'].'/backend/dokumen/kemahasiswaan/';
         $sql = "SELECT file_tor, file_rundown, file_undangan, file_lampiran
-                FROM Kegiatan
+                FROM Kegiatan_testing
                 WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         $query->result_array();
@@ -187,12 +187,21 @@ class FormBookingModel extends CI_Model
                 unlink($path.$nama_file);
             }
         }
+
+        //delete waktu
+        $this->deleteWaktu($nomor);
     }
 
-	function deleteWaktu($nomor){
+    function deleteWaktu($nomor){
         //delete record jadwal
         $this->db->where('nomor', $nomor);
-        $this->db->delete('waktu');
+        $this->db->delete('waktu_testing');
+    }
+
+    function delWaktu($event_id){
+        //delete record jadwal pada saat edit data
+        $this->db->where('event_id', $event_id);
+        $this->db->delete('waktu_testing');
     }
 
     function clear_dokumen($nomor)
@@ -205,19 +214,19 @@ class FormBookingModel extends CI_Model
             'file_lampiran' => ''
         );
         $this->db->where('nomor', $nomor);
-        $this->db->update('kegiatan', $clear_value); 
+        $this->db->update('kegiatan_testing', $clear_value); 
     }
 
     function edit_dokumen($nomor, $data)
     {
         //isi data dokumen
         $this->db->where('nomor', $nomor);
-        $this->db->update('kegiatan', $data);
+        $this->db->update('kegiatan_testing', $data);
     }
 
     function hapus_dokumen($nomor, $field, $nama_file)
     {
-        $sql = "UPDATE kegiatan SET $field = '' WHERE nomor = '$nomor'";
+        $sql = "UPDATE kegiatan_testing SET $field = '' WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
         $path = $_SERVER['DOCUMENT_ROOT'].'/backend/dokumen/kemahasiswaan/';
         unlink($path.$nama_file);
@@ -301,7 +310,7 @@ class FormBookingModel extends CI_Model
         $array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
                             '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
 
-        $sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+        $sql = "REPLACE INTO waktu_testing (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
         mysql_query($sql) or die(mysql_error());
         echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
                 
@@ -361,5 +370,11 @@ class FormBookingModel extends CI_Model
         if (count($data_bentrok) == 0) {
             //echo '<script>window.location.replace("daftar-pengajuan");</script>';
         }
+    }
+    
+    public function getPejabatDepartemen($kd_dep){
+    	$sql = "SELECT * FROM pejabat_departemen WHERE kd_dep = '$kd_dep'";
+        $query = $this->db->query($sql);
+        return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 }
