@@ -19,6 +19,7 @@ $(document).ready(function() {
     $("#tgl_proses").datepicker({ dateFormat: "yy-mm-dd"}).datepicker("setDate", new Date());
 
     $('.simpan').unbind('click').click(function(){
+    
         //nomor           = $('#nomor').val();
         tgl_proses      = $('#tgl_proses').val();
         tgl_permohonan  = $('#tgl_permohonan').val(); 
@@ -59,14 +60,14 @@ $(document).ready(function() {
         var deskripsi       = CKEDITOR.instances.deskripsi.getData()
         var tujuan          = CKEDITOR.instances.tujuan.getData()
         var pengisi_acara   = CKEDITOR.instances.pengisi_acara.getData()
-
-		/*edit tgl 6 sept
+        
+        //edit tgl 6 sept
         //var kode_org_mhs         = $('#kode_org_mhs').val();
         var kode_org_mhs = $("input[name='organisasi_mhs']:checked").val();
         var ketua_org_mhs	= $('#ketua_org_mhs').val();
         var pejabat_dep         = $('#pejabat_dep').val();
         var nip         = $('#nip').val();
-		*/
+
         //masukkan tanggal dan waktu kegiatan ke dalam array
         var event_id = [];
         $('.event_id').each(function () { 
@@ -134,17 +135,19 @@ $(document).ready(function() {
         formData.append("jam_selesai", jam_selesai);
         formData.append("menit_mulai", menit_mulai);
         formData.append("menit_selesai", menit_selesai);
-
-		/*update tgl 7 sept
+        
+        //update tgl 6 sept
         formData.append("kode_org_mhs", kode_org_mhs);
         formData.append("ketua_org_mhs", ketua_org_mhs);
         formData.append("pejabat_dep", pejabat_dep);
         formData.append("nip", nip);
-        */
+		
+		//var link = "<?php echo base_url(); ?>kemahasiswaan/formBooking/simpan"
+		//alert(link)
         //insert data dan jadwal kegiatan
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBooking/simpan",
+            url: "<?php echo base_url(); ?>kemahasiswaan/formBooking/simpan",
             data: formData,
             contentType: false,       // The content type used when sending data to the server.
             cache: false,             // To unable request pages to be cached
@@ -153,7 +156,7 @@ $(document).ready(function() {
                 console.log(data)
                 $(".alert-pesan").fadeIn();
                 $(".alert-pesan").html(data);
-                $(".alert-pesan").fadeOut(2300); 
+                //$(".alert-pesan").fadeOut(2300); 
             },
             complete: function(data) {
                 //$("#modal-form").hie("hide");    
