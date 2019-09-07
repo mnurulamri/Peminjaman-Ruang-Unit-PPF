@@ -99,9 +99,9 @@ function content_table($posts, $data_jadwal, $offset, $hak_akses, $username){
             <td>'.$rows['prodi'].'</td>
             <td>'.$rows['no_surat'].'</td>
             
-            <td>
-                '.$rows['tema'].'
-                <!-- cetak jadwal
+            <td width="350px">
+                <!--'.$rows['tema'].'
+                 cetak jadwal-->
                 <table>'; 
                 foreach ($schedule as $k_start_date => $v_start_date) {
                     foreach ($v_start_date as $k_end_date => $v_end_date) {
@@ -125,10 +125,21 @@ function content_table($posts, $data_jadwal, $offset, $hak_akses, $username){
                 }
             echo'
                 </table>
-                -->
-            </td>
-             
-            <td id="status_'.$rows['nomor'].'" class="status">
+                
+            </td>';
+
+            //if () {
+            if (($rows['status']==0 or $rows['status']==4 or $rows['status']==5) and ($hak_akses==4 or $hak_akses==5)) {
+              $class = 'class="status"';
+              $style = 'style="cursor:pointer"';
+            } else {
+              $class = 'class="statusx"';
+              $style = 'style=""';
+            }
+            
+
+            echo ' 
+            <td id="status_'.$rows['nomor'].'" '.$class.' '.$style.'>
                 '.status_persetujuan($rows['status'], $rows['alasan']).'
             </td>
             <td id="crud_view_'.$rows['nomor'].'" style="text-align:top">';
@@ -259,22 +270,34 @@ function dokumen($style_tor,$ext_tor,$nama_file_tor,$view_tor,$style_rundown,$ex
 
 function status_persetujuan($status, $alasan){
   if($status == 0){
-    $keterangan = '<span class="statusx" style="color:#C85EC7;font-size:11px;">Menunggu Persetujuan Wakil Manajer kemahasiswaan</span>';
+    $keterangan = '<span style="color:#C85EC7;font-size:11px;">Menunggu Persetujuan Wakil Manajer kemahasiswaan</span>';
   } else if($status == 1 or $status == 2) {
     $keterangan = '<span style="color:#808000;font-size:11px;">Menunggu Persetujuan Wakil Manajer PPF</span>';
   } else if($status == 3){
-    $keterangan = '<span class="statusx" style="color:#009966;font-size:11px;">Disetujui</span>';
+    $keterangan = '<span style="color:#009966;font-size:11px;">Disetujui</span>';
   } else if($status == 4){
     if ($alasan=='') {
-      $keterangan = '<span class="statusx" style="color:#009966;font-size:11px;">Ditunda</span>';
+      $keterangan = '<span style="color:#009966;font-size:11px;">Ditunda</span>';
     } else {
-      $keterangan = '<span class="statusx" style="color:#009966;font-size:11px;">Ditunda<i>'.$alasan.'</i></span>';
+      $keterangan = '<span style="color:#009966;font-size:11px;">Ditunda<i>'.$alasan.'</i></span>';
     }
   } else if($status == 5){
     if ($alasan=='') {
-      $keterangan = '<span class="statusx" style="color:#009966;font-size:11px;">Ditolak</span>';
+      $keterangan = '<span style="color:#009966;font-size:11px;">Ditolak</span>';
     } else {
-      $keterangan = '<span class="statusx" style="color:#009966;font-size:11px;">Ditolak<i>'.$alasan.'</i></span>';
+      $keterangan = '<span style="color:#009966;font-size:11px;">Ditolak<i>'.$alasan.'</i></span>';
+    }
+  } else if($status == 6){
+    if ($alasan=='') {
+      $keterangan = '<span style="color:#009966;font-size:11px;">Menunggu Persetujuan Wakil Manajer PPF<br><i>- Ditunda -</i></span>';
+    } else {
+      $keterangan = '<span style="color:#009966;font-size:11px;">Menunggu Persetujuan Wakil Manajer PPF<br><i>- Ditunda -</i><i>'.$alasan.'</i></span>';
+    }
+  } else if($status == 7){
+    if ($alasan=='') {
+      $keterangan = '<span style="color:#009966;font-size:11px;">Menunggu Persetujuan Wakil Manajer PPF<br><i>- Ditolak -</i></span>';
+    } else {
+      $keterangan = '<span style="color:#009966;font-size:11px;">Menunggu Persetujuan Wakil Manajer PPF<br><i>- Ditolak -</i><i>'.$alasan.'</i></span>';
     }
   } else {
     $keterangan = ' ';

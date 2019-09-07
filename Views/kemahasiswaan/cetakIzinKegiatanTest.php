@@ -1,8 +1,9 @@
 <pre>
 <?php
 /*print_r($data_kegiatan);
+print_r($organisasi) ;
 print_r($data_jadwal);
-print_r($data_kegiatan_entitas);}*/
+print_r($organisasi);*/
 foreach ($data_kegiatan as $k => $v) {
     $nomor          = $v['nomor'];
     $event_name     = $v['event_name'];
@@ -27,6 +28,15 @@ foreach ($data_kegiatan as $k => $v) {
     $file_lampiran  = $v['file_lampiran'];
     $status  = $v['status'];
     $alasan  = $v['alasan'];
+
+    if (count($organisasi)>0) {
+    	foreach ($organisasi as $k => $v) {
+    		echo $v->programstudi;
+    	}
+    } else {
+    	echo '0';
+    }
+    echo date('Y-m-d h:i:s');
 }
 ?>
 </pre>

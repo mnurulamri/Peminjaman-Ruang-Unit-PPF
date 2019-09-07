@@ -98,13 +98,13 @@ function content_table($posts, $data_jadwal, $offset, $hak_akses, $username){
             <td width="220px">'.$rows['event_name'].'</td>
             <td>'.$rows['prodi'].'</td>
             <td>'.$rows['no_surat'].'</td>
-            <td>
+            <td width="300px">
                 <table>'; 
                 foreach ($schedule as $k_start_date => $v_start_date) {
                     foreach ($v_start_date as $k_end_date => $v_end_date) {
                         $waktu_awal = date('H:i', strtotime($k_start_date));
                         $waktu_akhir = date('H:i', strtotime($k_end_date));
-                        echo '<tr><td class="day">'.tanggal($k_start_date).'</td><td class="time">'.$waktu_awal.' '.$waktu_akhir.'</td><td>';
+                        echo '<tr><td class="day">'.tanggal($k_start_date).'</td><td class="time">'.$waktu_awal.' '.$waktu_akhir.'</td><td style="vertical-align:top">';
                         $i=1;
                         foreach ($v_end_date as $v) {
                             //echo '<div>'.$v->nm_ruang.'</div>';
@@ -177,7 +177,8 @@ function content_table($posts, $data_jadwal, $offset, $hak_akses, $username){
                     <i id='.$rows['nomor'].' data-toggle="modal" data-target=".form-booking-edit" class="edit-kegiatan fa fa-edit fa-align-center" style="color:#00a65a; font-size:20px; cursor:pointer; width:20px"></i>
                   </span>&nbsp;&nbsp;|&nbsp;&nbsp;
                   <span>
-                      <i id='.$rows['nomor'].' class="view_confirm '.$rows['username'].' fa fa-file-pdf-o fa-align-center fa-lg faa-vertical" style="color:red; cursor:pointer; width:20px"></i>
+                    <i id='.$rows['nomor'].' class="testing '.$rows['username'].' fa fa-file-pdf-o fa-align-center fa-lg faa-vertical" style="color:red; cursor:pointer; width:20px"></i>
+                    <!--<i id='.$rows['nomor'].' class="view_confirm '.$rows['username'].' fa fa-file-pdf-o fa-align-center fa-lg faa-vertical" style="color:red; cursor:pointer; width:20px"></i>-->
                   </span>&nbsp;&nbsp;|&nbsp;&nbsp;
                   <span>
                     <i id='.$rows['nomor'].' rel="'.$rows['event_name'].'" class="del_kegiatan fa fa-trash fa-align-center fa-lg" style="color:red; cursor:pointer; width:20px"></i>

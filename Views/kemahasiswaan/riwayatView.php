@@ -12,7 +12,7 @@ if (count($data_user)==0) {
         $prodi          = '';
         $no_telp        = '';
         $email          = '';
-} elseif(count($data_user)>0 && $hak_akses==0) {
+} elseif(count($data_user)>0 ) {
     foreach ($data_user as $k => $v) {
         $nama_peminjam  = $v->nama_peminjam;
         $id_peminjam    = $v->id_peminjam;
@@ -164,14 +164,15 @@ $(document).ready(function()
             var nomor = $(this).attr('id')
             $.ajax({
                 type: 'POST',
-                url: "<?=base_url()?>" + "kemahasiswaan/formbooking/deleteKegiatan",
+                url: "<?=base_url()?>kemahasiswaan/formBooking/deleteKegiatan",
                 data:{nomor:nomor},
                 success: function(data){
-                    alert('data sudah didelete')
-                    fetch_data();
+                    alert('data sudah didelete' + data)
+                    //fetch_data();
                     console.log(data)
                 }
             })
+            fetch_data();
         }        
     })
 
@@ -191,7 +192,7 @@ $(document).ready(function()
         
     })
 
-        $(document).on('click', '.view_final', function(){
+    $(document).on('click', '.view_final', function(){
         //
         var event_id    = $(this).attr('id');
         var link_url = '<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/' + nomor + ' width="350" height="570"></div>'
@@ -268,10 +269,11 @@ $(document).ready(function()
     var nomor = $(this).attr('id').split('_');
     var link_url = '<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/' + nomor + ' width="350" height="570"></div>'
     //alert(link_url)
-    $("#modal-dokumen").modal("show")
+    //$("#modal-dokumen").modal("show")
     //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>kemahasiswaan/formPdf/cek/' + nomor + ' width="350" height="570"></div>')
-    $("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/test/' + nomor + ' width="100%" height="570"></div>')
-   				
+    //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/cetakIzinKegiatan/' + nomor + ' width="100%" height="850"></div>')
+   //window.open("<?=base_url()?>" + "kemahasiswaan/formPdf/cetakIzinKegiatan/" + nomor, '_blank');
+   window.open("<?=base_url()?>" + "kemahasiswaan/formPdf/test/" + nomor, '_blank');	
   })
 })
 

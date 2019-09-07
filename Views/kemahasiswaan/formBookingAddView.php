@@ -29,7 +29,7 @@
                     <!-- Bagian Untuk Diisi Pemohon -->
                     <div class="box box-warning">        
                         <div class="box-header with-border" style="text-align:center">
-                            <b class="box-title">Bagian Untuk Diisi Pemohon</b>
+                            <b class="box-title">Diajukan Oleh</b>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -107,6 +107,60 @@
                             </div>
                         </div>
                     </div>
+                    <!-- update  7 sept -->
+                    <!-- Data Pengesahan 
+                    <div class="box box-warning">
+                        <div class="box-header with-border" style="text-align:center">
+                            <b class="box-title">Disahkan Oleh</b>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="ketua_lembaga" class="col-sm-3 col-md-3 col-md-3 control-label" style="text-align:right">Nama Organisasi Mahasiswa :  </label>
+                                <div class="col-sm-4 col-md-4 col-md-4">
+                                                          
+                                    <div class="radio">
+                                        <label>
+                                          <input type="radio" name="organisasi_mhs" class="organisasi_mhs" id="bem" value="bem" data-nama-org="Badan Eksekutif Mahasiswa">
+                                          Badan Eksekutif Mahasiswa
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                          <input type="radio" name="organisasi_mhs" class="organisasi_mhs" id="bpm" value="bpm" data-nama-org="Badan Perwakilan Mahasiswa">
+                                          Badan Perwakilan Mahasiswa
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                          <input type="radio" name="organisasi_mhs" class="organisasi_mhs" id="hm" value="hm" data-nama-org="Himpunan Mahasiswa">
+                                          Himpunan Mahasiswa
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                          <input type="radio" name="organisasi_mhs" class="organisasi_mhs" id="bo" value="bo" data-nama-org="Badan Otonom">
+                                          Badan Otonom Mahasiswa
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                          <input type="radio" name="organisasi_mhs" class="organisasi_mhs" id="bso" value="bso"  data-nama-org="Badan Semi Otonom Mahasiswa">
+                                          Badan Semi Otonom
+                                        </label>
+                                    </div>            
+                                </div>
+                                <div class="col-sm-5 col-md-5 col-md-5">
+                                    <div>Nama Ketua <span id="nama_organisasi"></span></div>
+                                    <input type="text" name="ketua_org_mhs" class="ketua_org_mhs form-control" id="ketua_org_mhs" value="">
+                                    	<br>
+                                    <div id="label-pejabat">Nama Pejabat Departemen <span id="nama_dep"></span></div>
+                                    <input type="text" name="nip" class="nip form-control" id="nip" value="">
+                                    <input type="text" name="pejabat_dep" class="pejabat_dep form-control" id="pejabat_dep" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    
                     <!-- Data Kegiatan -->
                     <div class="box box-warning">        
                         <div class="box-header with-border" style="text-align:center">
@@ -256,7 +310,7 @@
                                     </form>
                                     </div>                        
                                 </div>
-                                <div>&nbsp;</div>
+                                <div style="clear:both">&nbsp;</div>
                                 <div class="form-group" id="tr_clone">
                                     <label for="waktu" class="col-sm-3 control-label" style="text-align:right">Waktu Pemakaian :  </label>
                                     <div class="col-sm-9 add-jadwal">

@@ -60,6 +60,13 @@ $(document).ready(function() {
         var tujuan          = CKEDITOR.instances.tujuan.getData()
         var pengisi_acara   = CKEDITOR.instances.pengisi_acara.getData()
 
+		/*edit tgl 6 sept
+        //var kode_org_mhs         = $('#kode_org_mhs').val();
+        var kode_org_mhs = $("input[name='organisasi_mhs']:checked").val();
+        var ketua_org_mhs	= $('#ketua_org_mhs').val();
+        var pejabat_dep         = $('#pejabat_dep').val();
+        var nip         = $('#nip').val();
+		*/
         //masukkan tanggal dan waktu kegiatan ke dalam array
         var event_id = [];
         $('.event_id').each(function () { 
@@ -128,6 +135,12 @@ $(document).ready(function() {
         formData.append("menit_mulai", menit_mulai);
         formData.append("menit_selesai", menit_selesai);
 
+		/*update tgl 7 sept
+        formData.append("kode_org_mhs", kode_org_mhs);
+        formData.append("ketua_org_mhs", ketua_org_mhs);
+        formData.append("pejabat_dep", pejabat_dep);
+        formData.append("nip", nip);
+        */
         //insert data dan jadwal kegiatan
         $.ajax({
             type: "POST",

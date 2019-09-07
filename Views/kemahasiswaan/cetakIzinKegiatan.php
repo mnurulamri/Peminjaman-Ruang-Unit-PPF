@@ -27,8 +27,32 @@ foreach ($data_kegiatan as $k => $v) {
     $file_lampiran  = $v['file_lampiran'];
     $status  = $v['status'];
     $alasan  = $v['alasan'];
+
+	if (count($organisasi)>0) {
+    	foreach ($organisasi as $k => $v) {
+    		$organisasi = $v->programstudi;
+    	}
+    } else {
+    	$organisasi = $prodi;
+    }  
 }
 
+
+
+
+//$organisasi = ($organisasi=='') ? '' : $organisasi;
+
+function isian($data){
+	$str = str_replace('<p>', '', $data);
+	$str = str_replace('</p>', '<br>', $str);
+	echo '
+				<table>
+					<tr>
+						<td width="13px"></td>
+						<td width="375px">'.$str.'</td>
+					</tr>
+				</table>';
+}
 ?>
 
 	<table class="form-table" border="0" cellpadding="3px">
@@ -63,7 +87,7 @@ foreach ($data_kegiatan as $k => $v) {
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Program Studi</td>
-			<td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<?=$prodi?></td>
+			<td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<?=$organisasi?></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Nomor Telepon</td>
@@ -87,33 +111,15 @@ foreach ($data_kegiatan as $k => $v) {
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Tema Acara/Kegiatan</td>
-			<td colspan="2">
-				<?php
-					$str = str_replace('<p>', '', $tema);
-					$str = str_replace('</p>', '<br>', $str);
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;'.$str;
-				?>
-			</td>
+			<td colspan="2"><?isian($tema)?></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Deskripsi Acara/Kegiatan</td>
-			<td colspan="2">
-				<?php
-					$str = str_replace('<p>', '', $deskripsi);
-					$str = str_replace('</p>', '<br>', $str);
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;'.$str;
-				?>
-			</td>
+			<td colspan="2"><?isian($deskripsi)?></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Pengisi Acara</td>
-			<td colspan="2">
-				<?php
-					$str = str_replace('<p>', '', $pengisi_acara);
-					$str = str_replace('</p>', '<br>', $str);
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;'.$str;
-				?>
-			</td>
+			<td colspan="2"><?isian($pengisi_acara)?></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label">Lampiran</td>
@@ -133,58 +139,72 @@ foreach ($data_kegiatan as $k => $v) {
 				<?=$jml_peserta?>
 			</td>
 		</tr>
-		<!--
+		
 		<tr>
-			<td colspan="2" class="label">LOKASI DAN JADWAL PENGGUNAAN RUANG</td>
+			<td colspan="2" class="label">Lokasi dan Jadwal Penggunaan Ruang</td>
 			<td colspan="2">
                 <table class="table">
-                    <tr>
-                        <th width="97px" style="text-align:center">Lokasi/Area/Ruangan</th>
-                        <th width="175px" style="text-align:center">Tanggal</th>
-                        <th width="25px" style="text-align:center">Waktu</th>
+                    <tr style="background-color:lightgray">
+                        <th width="100px" style="text-align:center;border-bottom:1px solid #fff">Lokasi/Area/Ruang</th>
+                        <th width="175px" style="text-align:center;border-bottom:1px solid #fff">Tanggal</th>
+                        <th width="115px" style="text-align:center;border-bottom:1px solid #fff">Waktu</th>
                     </tr>
                     <?php print_r(cetak_jadwal_konfirmasi($ruang, $data_jadwal)); ?>
                 </table>
 			</td>
 		</tr>
-		-->
+		
 		<tr>
-			<td colspan="4" class="labelx" style="text-align:center; ">PERSETUJUAN</td>
+			<td colspan="4" class="labelx" style="border-left:3px solid #fff;border-right:3px solid #fff";>&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="2" class="label" style="text-align:center">Untuk Kegiatan Himpunan Mahasiswa<br>Ketua Program Sarjana<br><br><br>(________________________________________)<br>Dr......<br>NIP: ......</td>
-			<td colspan="2" style="vertical-align: middle;">				
+			<td colspan="4" class="labelx" style="text-align:center;background-color:#d2d6de">PERSETUJUAN</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="label">Status</td>
+			<td colspan="2">
 				<?=checkmark_status($status)?>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" class="label" style=" border-bottom: 1px solid #fff; text-align:center">Wakil Manajer Bidang Khusus Kemahasiswaan</td>
-			<td colspan="2" class="labelx" style="text-align:center; border-top:1px solid black; border-bottom:1px solid black; border-left:1px solid black">KETERANGAN/PENJELASAN</td>
+			<td colspan="2" class="label">Keterangan/Penjelasan</td>
+			<td colspan="2">
+				<?=$alasan?>
+			</td>
 		</tr>
 		<tr>
-			<td colspan="2" class="label" style="border-top: 1px solid #fff; text-align:center"><br><br><br>(________________________________________)<br>Bhakti Eko Nugroho, M.A.<br>NUP: ......</td>
-			<td colspan="2"><?=$alasan?></td>
+			<td colspan="4" class="labelx" style="border-left:3px solid #fff;border-right:3px solid #fff;border-bottom:3px solid #fff;">&nbsp;</td>
 		</tr>
-		<!--testing-->
+		
+		<p style="page-break-after:always"></p>
+		<tr>
+			<td colspan="4" class="labelx" style="border-left:3px solid #fff;border-right:3px solid #fff;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="4" class="labelx" style="text-align:center;background-color:#d2d6de">PENGESAHAN</td>
+		</tr>
 		<tr>
 			<td>
-				<table border="1" style="margin:auto; width:100%">
+				<?php
+				$str = '&nbsp;';
+				$spasi = '';
+				for ($i=0; $i < 60; $i++) { 
+					$spasi .= $str;  
+				}
+				$spasi = '<u>'.$spasi.'</u>';
+				?>
+				<table border="0" style="margin:auto; width:100%; padding:15px; font-weight: bold">
 					<tr>
 						<td style="text-align:center;width:334px">
-							Untuk Kegiatan Himpunan Mahasiswa<br>Ketua Program Sarjana<br><br><br>(________________________________________)<br>Dr......<br>NIP: ......
+							Untuk Kegiatan Himpunan Mahasiswa<br>Ketua <?=$organisasi?><br><br><br><br><br><br>(<?=$spasi?>)<br><br>NIP/NUP. <?=$spasi?>
 						</td>
 						<td style="text-align:center;width:334px">
-							Ketua BEM/Lembaga/Himpunan<br>Ketua Program Sarjana<br><br><br>(________________________________________)<br><br>NPM: ......
+							Ketua BEM/Lembaga/Himpunan<br><br><br><br><br><br><br>(<?=$spasi?>)<br><br>NPM. <?=$spasi?>
 						</td>
 					</tr>
 					<tr>
-						<td style="text-align:center;">
-							Wakil Manajer Bidang Khusus Kemahasiswaan<br><br><br>(________________________________________)<br>Bhakti Eko Nugroho, M.A.<br>NUP: ......
-						</td>
-						<td style="text-align:center;">
-							<div>KETERANGAN/PENJELASAN</div> 
-							<div><?=checkmark_status($status)?></div>
-							<div><?=$alasan?></div>
+						<td colspan="2" style="text-align:center;">
+							Wakil Manajer Bidang Khusus Kemahasiswaan<br><br><br><br><br>(<u>Bhakti Eko Nugroho, M.A.</u>)<br>NUP. 091603022
 						</td>
 					</tr>
 				</table>

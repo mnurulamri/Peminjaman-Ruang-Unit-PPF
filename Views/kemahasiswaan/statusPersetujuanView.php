@@ -174,7 +174,7 @@ CKEDITOR.replace('alasan_tunda')
         var id = $(this).attr('id');
         id = id.split('_');
         var nomor = id[1];
-        alert(nomor);
+        //alert(nomor);
         $(".verifikasi").modal("show")
         //$('.modal-content').html(id);
         //
@@ -311,11 +311,14 @@ CKEDITOR.replace('alasan_tunda')
 
    $(document).on('click', '.testing', function(){
     var nomor = $(this).attr('id').split('_');
+    alert(nomor)
     var link_url = '<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/test' + nomor + ' width="350" height="570"></div>'
     //alert(link_url)
     $("#modal-dokumen").modal("show")
     $("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/test/' + nomor + ' width="100%" height="570"></div>')
-    //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>kemahasiswaan/formPdf/cek/' + nomor + ' width="350" height="570"></div>')                   
+    //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>kemahasiswaan/formPdf/cek/' + nomor + ' width="350" height="570"></div>')  
+    //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/cetakIzinKegiatan/' + nomor + ' width="100%" height="570"></div>')                
+    //$("#dok-view").html('<embed src=https://docs.google.com/gview?url=https://ppf.fisip.ui.ac.id/backend/kemahasiswaan/formPdf/cetakIzinKegiatan/ppfcmrUmToOVwKNMPwoupQE width="350" height="570"/>')     
   })
     
     /*

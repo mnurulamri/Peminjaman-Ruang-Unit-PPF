@@ -56,7 +56,7 @@ $(document).ready(function()
 {
     $(".update").click(function()
     {
-    	alert("test")
+    	//alert("test")
         nomor           = $('#nomor').val()
         tgl_proses      = $('#edit_tgl_proses').val()
         tgl_permohonan  = $('#edit_tgl_permohonan').val()
@@ -167,7 +167,7 @@ console.log(ruang)
         
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBookingEdit/simpan",
+            url: "<?php echo base_url(); ?>kemahasiswaan/formBookingEdit/simpan",
             data: formData,
             contentType: false,       // The content type used when sending data to the server.
             cache: false,             // To unable request pages to be cached
@@ -262,7 +262,7 @@ console.log(ruang)
 
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formbooking/cekJadwalBentrok",
+            url: "<?php echo base_url(); ?>kemahasiswaan/formBookingEdit/cekJadwalBentrok",
             data: {
                 event_id:event_id,
                 ruang:ruang,  
@@ -273,6 +273,7 @@ console.log(ruang)
                 menit_selesai:menit_selesai
             },
             success: function(data) {
+            	
                 $('.pesan-bentrok-edit').html(data);
                 if (data != '') {
                     //Check to see if there is any text
@@ -289,7 +290,8 @@ console.log(ruang)
     //cek jadwal bentrok untuk tambah data 
     $(document).on('change', ".cek-bentrok-2", function(){
         var i = $(this).parent('td').attr('id');
-        var event_id    = $(this).parent().find('#edit_event_id-'+i).val();
+        //var event_id    = $(this).parent().find('#edit_event_id-'+i).val();
+        var event_id = 0
         var ruang       = $(this).parent().find('#edit_ruang-'+i).val();
         var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan-'+i).val();
         var jam_mulai   = $(this).parent().find('#edit_jam_mulai-'+i).val();
@@ -297,11 +299,11 @@ console.log(ruang)
         var menit_mulai = $(this).parent().find('#edit_menit_mulai-'+i).val();
         var menit_selesai = $(this).parent().find('#edit_menit_selesai-'+i).val();
         //alert('id='+i);
-        /*alert('event_id=' + event_id + ' ruang=' + ruang + ' tgl_kegiatan=' + tgl_kegiatan + ' jam_mulai=' + jam_mulai + ' menit_mulai=' + menit_mulai + ' jam_selesai=' + jam_selesai + ' menit_selesai=' + menit_selesai);*/
+        //alert('event_id=' + event_id + ' ruang=' + ruang + ' tgl_kegiatan=' + tgl_kegiatan + ' jam_mulai=' + jam_mulai + ' menit_mulai=' + menit_mulai + ' jam_selesai=' + jam_selesai + ' menit_selesai=' + menit_selesai);
         
         $.ajax({
             type: "POST",
-            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formbooking/cekJadwalBentrok",
+            url: "<?php echo base_url(); ?>" + "kemahasiswaan/formBookingEdit/cekJadwalBentrok",
             data: {
                 event_id:event_id,
                 ruang:ruang,  
@@ -415,7 +417,7 @@ console.log(ruang)
         if (r == true) {
             $.ajax({
                 type: "POST",
-                url: "<?php echo base_url(); ?>" + "penggunaan/ruangRapat/delWaktu",
+                url: "<?php echo base_url(); ?>penggunaan/ruangRapat/delWaktu",
                 data: {
                     event_id:event_id
                 },
