@@ -27,11 +27,29 @@ class statusPinjamModel extends CI_Model
         /*$sql = "SELECT *, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
                 FROM kegiatan a, waktu b, ruang_rapat c 
                 WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()
-                ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";*/
-
+                ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
+        
         $this->db->select("a.*, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang");
         $this->db->from("kegiatan a, waktu b, ruang_rapat c");
-        $this->db->where("a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()");
+        $this->db->where("a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()"); 
+
+        // Sub Query
+        $this->db->distinct();
+        $this->db->select('nomor');
+        $this->db->from('waktu');
+        $this->db->where("start_date >= CURDATE()");
+        $subQuery =  $this->db->compiled_select();
+         
+        // Main Query
+        $this->db->select('*')
+                 ->from('kegiatan')
+                 ->where("nomor IN ($subQuery)", NULL, FALSE);
+                 */
+        
+        $this->db->select('*')
+                 ->from('kegiatan')
+                 ->where('flag_ppaa = 0 and status = 0')
+                 ->where("nomor IN (SELECT DISTINCT nomor FROM waktu WHERE start_date >= CURDATE())", NULL, FALSE);
 
         //filter data by searched keywords
         if(!empty($params['search']['keywords'])){
@@ -58,7 +76,14 @@ class statusPinjamModel extends CI_Model
 
     function getListStatusPinjam()
     {
-        $sql = "SELECT *, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
+        $sql = "SELECT id_kegiatan, a.nomor as nomor, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
+                FROM kegiatan a, waktu b, ruang_rapat c 
+                WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()
+                ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
+        $query = $this->db->query($sql);
+        return ($query->num_rows() > 0)?$query->result_array():FALSE;
+
+        /*$sql = "SELECT *, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
                 FROM kegiatan a, waktu b, ruang_rapat c 
                 WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()
                 ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
@@ -67,7 +92,7 @@ class statusPinjamModel extends CI_Model
         while($rows = mysql_fetch_object($result)){
             $data[$rows->id_kegiatan][$rows->nomor][$rows->event_name][$rows->prodi][$rows->status][$rows->no_surat][$rows->start_date][$rows->end_date][] = $rows;
         }
-        return $data;
+        return $data;*/
     }
 
     function getRowsTest($params = array()){
@@ -82,9 +107,10 @@ class statusPinjamModel extends CI_Model
         $this->db->where("a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()");
         $this->db->group_by('id_kegiatan');
         $this->db->order_by('id_kegiatan','desc');*/
-
-        $this->db->select("id_kegiatan, event_name, prodi, no_surat, status, nomor");
+        $username = $params['username'];
+        $this->db->select("id_kegiatan, event_name, prodi, no_surat, status, nomor, file_tor, file_rundown, file_undangan, file_lampiran, username, flag_cetak, alasan");
         $this->db->from("view_kegiatan");
+        $this->db->where("username = '$username'");
 
         //filter data by searched keywords
         if(!empty($params['search']['keywords'])){
@@ -109,11 +135,11 @@ class statusPinjamModel extends CI_Model
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
     }
 
-    function getJadwal()
+    function getJadwal($username)
     {
         $sql = "SELECT id_kegiatan, a.nomor as nomor, start_date, end_date, DAY(start_date) as tgl, MONTH(start_date) as bulan, YEAR(start_date) as tahun, nm_ruang 
                 FROM kegiatan a, waktu b, ruang_rapat c 
-                WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE()
+                WHERE a.nomor = b.nomor AND b.ruang = kd_ruang AND flag_ppaa = 0 AND start_date >= CURDATE() AND username = '$username'
                 ORDER BY id_kegiatan DESC, YEAR(start_date) DESC, MONTH(start_date) DESC";
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;

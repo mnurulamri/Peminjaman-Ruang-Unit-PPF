@@ -50,14 +50,64 @@ class FormBookingModel extends CI_Model
             FROM waktu b, ruang_rapat c 
             WHERE b.ruang = kd_ruang AND nomor = '$nomor'
             ORDER BY YEAR(start_date) DESC, MONTH(start_date) DESC";
+        /*$sql = "SELECT GROUP_CONCAT(nm_ruang SEPARATOR ', ') as ruangan, start_date, end_date, b.kd_ruang as kd_ruang, event_id, nm_ruang 
+            FROM waktu a, ruang_rapat b
+            WHERE ruang = kd_ruang AND nomor = '$nomor' 
+            GROUP BY CONCAT(start_date, end_date)
+            ORDER BY start_date, kd_ruang";*/
         $query = $this->db->query($sql);
         return ($query->num_rows() > 0)?$query->result_array():FALSE;
+    }
+
+    function insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta){
+        //simpan data kegiatan
+        $this->db->insert('kegiatan', $data_kegiatan);
+
+        //simpan data entitas kegiatan
+        foreach ($data_entitas as $key => $value) {
+            $data = array(
+                'nomor' => $nomor,
+                'entitas' => $value
+            );
+
+            $this->db->insert('kegiatan_entitas', $data);
+        }
+
+        //simpan data kategori kegiatan
+        foreach ($data_kategori as $key => $value) {
+            $data = array(
+                'nomor' => $nomor,
+                'kategori' => $value
+            );
+
+            $this->db->insert('kegiatan_kategori', $data);
+        }
+
+        //simpan data jenis kegiatan
+        foreach ($data_jenis as $key => $value) {
+            $data = array(
+                'nomor' => $nomor,
+                'jenis' => $value
+            );
+
+            $this->db->insert('kegiatan_jenis', $data);
+        }
+
+        //simpan data peserta
+        foreach ($data_peserta as $key => $value) {
+            $data = array(
+                'nomor' => $nomor,
+                'peserta' => $value
+            );
+
+            $this->db->insert('kegiatan_peserta', $data);
+        }
     }
 
     function updateKegiatan($nomor, $data){
         $this->db->where('nomor', $nomor);
         $this->db->update('kegiatan', $data); 
-        echo 'data sudah disimpan!';
+        //echo 'data sudah disimpan!';
     }
 
     function updateKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta){
@@ -110,6 +160,41 @@ class FormBookingModel extends CI_Model
         }
     }
 
+    function deleteKegiatan($nomor)
+    {
+        #delete record table
+        $sql = "DELETE FROM kegiatan WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+        $sql = "DELETE FROM kegiatan_entitas WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+        $sql = "DELETE FROM kegiatan_kategori WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+        $sql = "DELETE FROM kegiatan_jenis WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+        $sql = "DELETE FROM kegiatan_peserta WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+
+        #delete data dokumen
+        $path = $_SERVER['DOCUMENT_ROOT'].'/backend/dokumen/kemahasiswaan/';
+        $sql = "SELECT file_tor, file_rundown, file_undangan, file_lampiran
+                FROM Kegiatan
+                WHERE nomor = '$nomor'";
+        $query = $this->db->query($sql);
+        $query->result_array();
+               
+        foreach ($query->result_array() as $key => $value) {
+            foreach ($value as $k => $nama_file) {
+                unlink($path.$nama_file);
+            }
+        }
+    }
+
+	function deleteWaktu($nomor){
+        //delete record jadwal
+        $this->db->where('nomor', $nomor);
+        $this->db->delete('waktu');
+    }
+
     function clear_dokumen($nomor)
     {
         //kosongkan data dokumen -> dipisah dengan edit dokumen karena fungsi edit dokumen dipanggil berulang oleh fungsi upload sehingga hanya diperlukan 1 kali kosongkan data
@@ -134,7 +219,7 @@ class FormBookingModel extends CI_Model
     {
         $sql = "UPDATE kegiatan SET $field = '' WHERE nomor = '$nomor'";
         $query = $this->db->query($sql);
-        $path = $_SERVER['DOCUMENT_ROOT'].'/app/dokumen/kemahasiswaan/';
+        $path = $_SERVER['DOCUMENT_ROOT'].'/backend/dokumen/kemahasiswaan/';
         unlink($path.$nama_file);
     }
 
@@ -215,8 +300,13 @@ class FormBookingModel extends CI_Model
         $array_hari = array('Sun'=>'Minggu', 'Mon'=>'Senin', 'Tue'=>'Selasa', 'Wed'=>'Rabu', 'Thu'=>'Kamis', 'Fri'=>'Jumat', 'Sat'=>'Sabtu');
         $array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
                             '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
-        $data_bentrok = array();
-        
+
+        $sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+        mysql_query($sql) or die(mysql_error());
+        echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
+                
+        /*
+        $data_bentrok = array();        
         $i=0;       
         foreach ($array as $k => $v) {
             //$event_id = $v['event_id'];
@@ -266,7 +356,7 @@ class FormBookingModel extends CI_Model
                 //echo '<pre>'; print_r($sql); echo '</pre>';
             }
         }
-        
+        */
         //tutup modal bila sudah tidak ada jadwal yang bentrok
         if (count($data_bentrok) == 0) {
             //echo '<script>window.location.replace("daftar-pengajuan");</script>';
