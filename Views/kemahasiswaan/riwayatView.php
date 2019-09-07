@@ -2,6 +2,8 @@
 if (isset($this->session->userdata['logged_in'])) {
     $username = ($this->session->userdata['logged_in']['username']);
     $hak_akses = ($this->session->userdata['logged_in']['hak_akses']);
+    
+    $kode_org = ($this->session->userdata['logged_in']['kode_org']);
 } else {
     $hak_akses = 0;
 }
@@ -28,7 +30,20 @@ if (count($data_user)==0) {
     $email          = '';
 }
 
+foreach ($data_org as $v){
+	$nip = $v['nip'];
+	$pejabat_dep = $v['nama'];
+}
+
+foreach ($nama_dep as $v){
+	$nama_dep = $v['departemen'];
+}
+print_r($nama_dep);
 ?>
+
+<input type="hidden" id="v_nip" value="<?=$nip?>" />
+<input type="hidden" id="v_pejabat_dep" value="<?=$pejabat_dep?>" />
+<input type="hidden" id="v_nama_dep" value="<?=$nama_dep?>" />
 
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="<?=base_url();?>assets/AdminLTE/plugins/datepicker/datepicker3.css">
@@ -131,6 +146,10 @@ function searchFilter(page_num) {
 
 $(document).ready(function() 
 {
+	$('#nip').hide();
+    	$('#pejabat_dep').hide();
+    	$('#label-pejabat').hide();
+	
     $("#example1").DataTable({
         scrollX:true
     });
@@ -158,7 +177,6 @@ $(document).ready(function()
 
     $(document).on('click', '.del_kegiatan', function(){
         var event_name = $(this).attr('rel')
-
         var r = confirm('Anda Yakin akan menghapus data kegiatan ' + event_name )
         if(r == true){
             var nomor = $(this).attr('id')
@@ -167,8 +185,8 @@ $(document).ready(function()
                 url: "<?=base_url()?>kemahasiswaan/formBooking/deleteKegiatan",
                 data:{nomor:nomor},
                 success: function(data){
-                    alert('data sudah didelete' + data)
-                    //fetch_data();
+                    alert('data sudah didelete')
+                    
                     console.log(data)
                 }
             })
@@ -192,7 +210,7 @@ $(document).ready(function()
         
     })
 
-    $(document).on('click', '.view_final', function(){
+        $(document).on('click', '.view_final', function(){
         //
         var event_id    = $(this).attr('id');
         var link_url = '<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/' + nomor + ' width="350" height="570"></div>'
@@ -272,9 +290,36 @@ $(document).ready(function()
     //$("#modal-dokumen").modal("show")
     //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>kemahasiswaan/formPdf/cek/' + nomor + ' width="350" height="570"></div>')
     //$("#dok-view").html('<div style="text-align:center"><embed src=<?=base_url()?>assets/pdf_viewer/web/viewer.html?file=<?=base_url()?>kemahasiswaan/formPdf/cetakIzinKegiatan/' + nomor + ' width="100%" height="850"></div>')
-   //window.open("<?=base_url()?>" + "kemahasiswaan/formPdf/cetakIzinKegiatan/" + nomor, '_blank');
-   window.open("<?=base_url()?>" + "kemahasiswaan/formPdf/test/" + nomor, '_blank');	
+   	window.open("<?=base_url()?>" + "kemahasiswaan/formPdf/cetakIzinKegiatan/" + nomor, '_blank');
   })
+
+	//update tgl 6 sept
+  //pengesahan organisasi mahasiswa
+  $(document).on('click', '.organisasi_mhs', function(){
+    var kode_org_mhs = $(this).val()
+    var nama_org_mhs = $(this).data("nama-org")
+	var nip = $("#v_nip").val()
+	var pejabat_dep = $("#v_pejabat_dep").val()
+	var nama_dep = $("#v_nama_dep").val()
+    $("#nama_organisasi").text(nama_org_mhs)
+    if(kode_org_mhs == 'hm'){
+    	$("#nip").val(nip)
+    	$("#pejabat_dep").val(pejabat_dep)
+    	$("#nama_dep").val(nama_dep)
+    	$("#nama_organisasi").text(nama_org_mhs + ' Departemen ' + nama_dep)
+    	$('#nip').show();
+    	$('#pejabat_dep').show();
+    	$('#label-pejabat').show();
+	} else {
+		$("#nip").val("")
+    	$("#pejabat_dep").val("")
+    	$("#nama_dep").val("")
+    	$("#nama_organisasi").text(nama_org_mhs)
+    	$('#nip').hide();
+    	$('#pejabat_dep').hide();
+    	$('#label-pejabat').hide();
+	}
+  });
 })
 
 </script>
