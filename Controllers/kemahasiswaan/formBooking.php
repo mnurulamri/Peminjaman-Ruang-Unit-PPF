@@ -72,9 +72,13 @@ class FormBooking extends CI_Controller
 		return $data['form_script'] 	= $this->load->view('kemahasiswaan/formBookingScript', $data, true);		
 	}
 
+	public function test_simpan()
+	{
+		echo "testing";
+	}
+
 	public function simpan()
 	{
-
 		//set variabel insert kegiatan
 		$tgl_proses	= $this->input->post('tgl_proses');
 		$tgl_permohonan= $this->input->post('tgl_permohonan');
@@ -99,6 +103,12 @@ class FormBooking extends CI_Controller
 		$tujuan 		= $this->input->post('tujuan');
 		$pengisi_acara 	= $this->input->post('pengisi_acara');
 		$peserta 		= $this->input->post('peserta');
+		
+		//update tgl 6 Sept
+		$kode_org_mhs 		= $this->input->post('kode_org_mhs');
+		$ketua_org_mhs 	= $this->input->post('ketua_org_mhs');
+		$pejabat_dep		= $this->input->post('pejabat_dep');
+		$nip		= $this->input->post('nip');
 
 		//set tanggal
 		$tgl_proses 	= tanggalToDb($tgl_proses);		
@@ -127,7 +137,12 @@ class FormBooking extends CI_Controller
 			'deskripsi' 	=> $deskripsi,
 			'tujuan' 		=> $tujuan,
 			'pengisi_acara'	=> $pengisi_acara,
-			'kode_org'		=> $this->session->userdata['logged_in']['kode_org']
+			'kode_org'		=> $this->session->userdata['logged_in']['kode_org'],
+			
+			'kode_org_mhs' 	=> $kode_org_mhs,
+			'ketua_org_mhs'	=> $ketua_org_mhs,
+			'pejabat_dep'	=> $pejabat_dep,
+			'nip'	=> $nip
 		);
 
         $entitas = explode(",", $entitas);
@@ -155,11 +170,12 @@ class FormBooking extends CI_Controller
 		foreach ($peserta as $key => $value) {
 			$data_peserta[] = $value;
 		}
-
-		#proses ke database
+		$this->test_data($data_kegiatan);
 		$this->editJadwal($nomor);
-		$this->formbookingmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
-		$this->upload($_FILES, $nomor);
+		//$this->formbookingmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
+		//$this->upload($_FILES, $nomor);
+		//$this->editJadwal($nomor);
+		
 	}
 
 	public function upload($files, $nomor)
@@ -306,26 +322,13 @@ class FormBooking extends CI_Controller
 			$array[$i]['menit_akhir'] = $v;
 			$i++;
 		}
-
-		//kelola input/edit data dengan mempertimbangkan jadwal yang bentrok
+		echo '<pre>'; print_r($array); echo '</pre>';
+				//kelola input/edit data dengan mempertimbangkan jadwal yang bentrok
 		//tampilkan pesan bila terjadi jadwal yang bentrok kemudian simpan data bila sudah tidak ada jadwal yang bentrok
 		$array_hari = array('Sun'=>'Minggu', 'Mon'=>'Senin', 'Tue'=>'Selasa', 'Wed'=>'Rabu', 'Thu'=>'Kamis', 'Fri'=>'Jumat', 'Sat'=>'Sabtu');
 		$array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
 		                    '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
 		$data_bentrok = array();
-		
-		#Cekbentrok
-		foreach ($array as $k => $v) {
-			$ruang = $v['ruang'];
-			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
-			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
-			$jadwal_bentrok = $this->ruangrapatmodel->cekJadwalBentrok($start_date, $end_date, $ruang);
-		}
-		
-		if(count($jadwal_bentrok) > 0){
-			echo '<div>ada jadwal yang bentrok!...</div>';
-			exit();
-		}
 		
 		$i=0;		
 		foreach ($array as $k => $v) {
@@ -334,8 +337,10 @@ class FormBooking extends CI_Controller
 			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
 			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
 
-			$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
-			mysql_query($sql) or die(mysql_error());
+			//$jadwal_bentrok = $this->ruangrapatmodel->jadwalBentrok($event_id, $start_date, $end_date, $ruang);
+			//echo '<pre>'; print_r($jadwal_bentrok); echo '</pre>';
+			echo $sql = "REPLACE INTO waktu_testing (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+			//mysql_query($sql) or die(mysql_error());
 			echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
 			
 			/*
@@ -345,6 +350,8 @@ class FormBooking extends CI_Controller
 				$jadwal_bentrok = $this->ruangrapatmodel->jadwalBentrok($event_id, $start_date, $end_date, $ruang);
 			}
 			
+			echo $cek = (count($jadwal_bentrok)>0) ? 'Ada yang bentrok' : 'Aman' ;
+
 			$j=0; //counter data bentrok
 			if ($jadwal_bentrok) {
 				
@@ -362,7 +369,7 @@ class FormBooking extends CI_Controller
 					$tanggal 	= $tgl.' '.$bulan.' '.$tahun;			
 					//tampilkan pesan bentrok ke dalam form
 					$data_bentrok[$j] = '<div class="well well-sm" style="color:red">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';
-					echo '<div class="well well-sm">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';	
+					//echo '<div class="well well-sm">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</div>';	
 				}
 				$j++;		
 			} else {
@@ -375,9 +382,9 @@ class FormBooking extends CI_Controller
 					'end_date'	=>$end_date
 				);
 				//echo '<pre>';echo print_r($data);echo '</pre>';;
-				$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
-				mysql_query($sql) or die(mysql_error());
-				echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
+				//$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+				//mysql_query($sql) or die(mysql_error());
+				//echo '<div>event_id'.$nomor.' data sudah di simpan!...</div>';
 				//echo '<pre>'; print_r($sql); echo '</pre>';
 			}
 			*/
@@ -749,7 +756,6 @@ class FormBooking extends CI_Controller
 		#delete data kegiatan dan jadwal
 		$nomor = $this->input->post('nomor');
 		$this->formbookingmodel->deleteKegiatan($nomor);
-		$this->formbookingmodel->deleteWaktu($nomor);
 	}
 
 	/*public function format_tanggal($_tgl_kegiatan){
@@ -760,5 +766,10 @@ class FormBooking extends CI_Controller
 		$tgl_kegiatan = $y.'-'.$m.'-'.$d;
 		return $tgl_kegiatan;
 	}*/
-
+	
+	public function test_data($data){
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
+	}
 }

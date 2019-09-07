@@ -6,6 +6,10 @@ class RiwayatPinjamMhs extends CI_Controller
 	var $userlogin = null;
 	var $username = null;
 	var $data_header = array();
+	
+	var $kode_org = null;
+	var $nama_prodi = null;
+	var $nama_dep = null;
 
 	public function __construct() {
 		parent::__construct();
@@ -35,10 +39,16 @@ class RiwayatPinjamMhs extends CI_Controller
 		#$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
 		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
 		#$this->session->userdata['logged_in']['hak_akses'] =0;
-			
+		
+		$this->data_header['cn'] = $this->session->userdata['logged_in']['cn'];
+		$this->data_header['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
+		
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
+		
+		$this->kode_org = $this->session->userdata['logged_in']['kode_org'];
+		$this->nama_dep = $this->organisasi->nama_dep($this->kode_org);
 	}
 
 	public function template()
@@ -65,6 +75,13 @@ class RiwayatPinjamMhs extends CI_Controller
 		$data['form_script'] = $this->selectRuang();
 		$data['start_time']	= $this->waktuMulai();
 		$data['end_time']	= $this->waktuSelesai();
+		
+		//update tgl 6 Sept
+		$kd_dep = substr($this->kode_org, 3, 2);
+		$data_org = $this->formbookingmodel->getPejabatDepartemen($kd_dep);
+		$data['data_org'] = $data_org;
+		$data['nama_dep'] = $this->nama_dep;
+		
 		$this->load->view('kemahasiswaan/riwayatView', $data);		
 	}
 
