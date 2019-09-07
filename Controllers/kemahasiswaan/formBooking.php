@@ -5,6 +5,7 @@ class FormBooking extends CI_Controller
 	var $hak_akses = null;
 	var $userlogin = null;
 	var $username = null;
+	var $prodi = null;
 	var $data_header = array();
 
 	public function __construct() {
@@ -14,7 +15,11 @@ class FormBooking extends CI_Controller
 		$this->load->helper('tanggal');
 		$this->load->model('penggunaan/ruangrapatmodel');
 		$this->load->model('kemahasiswaan/formbookingmodel');
+		$this->load->model('organisasi');
 		date_default_timezone_set('Asia/Jakarta');
+
+		error_reporting(E_ALL);
+		ini_set('display_errors', 1);
 
 		//buat test doang --1--
 		$userlogin = ($this->session->userdata['logged_in']['username']);
@@ -25,6 +30,7 @@ class FormBooking extends CI_Controller
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
+		//$this->prodi = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
 	}
 
 	public function template()
@@ -116,11 +122,12 @@ class FormBooking extends CI_Controller
 			'catatan'		=> $catatan,
 			'status'		=> 0,
 			'username' 		=> $username,
-			'flag'			=> 0,
+			'flag'			=> 1,
 			'tema' 			=> $tema,
 			'deskripsi' 	=> $deskripsi,
 			'tujuan' 		=> $tujuan,
-			'pengisi_acara'	=> $pengisi_acara
+			'pengisi_acara'	=> $pengisi_acara,
+			'kode_org'		=> $this->session->userdata['logged_in']['kode_org']
 		);
 
         $entitas = explode(",", $entitas);
@@ -149,10 +156,9 @@ class FormBooking extends CI_Controller
 			$data_peserta[] = $value;
 		}
 
-		$this->formbookingmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
-
+		#proses ke database
 		$this->editJadwal($nomor);
-
+		$this->formbookingmodel->insertKegiatanMhs($nomor, $data_kegiatan, $data_entitas, $data_kategori, $data_jenis, $data_peserta);
 		$this->upload($_FILES, $nomor);
 	}
 
@@ -307,6 +313,19 @@ class FormBooking extends CI_Controller
 		$array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
 		                    '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
 		$data_bentrok = array();
+		
+		#Cekbentrok
+		foreach ($array as $k => $v) {
+			$ruang = $v['ruang'];
+			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
+			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
+			$jadwal_bentrok = $this->ruangrapatmodel->cekJadwalBentrok($start_date, $end_date, $ruang);
+		}
+		
+		if(count($jadwal_bentrok) > 0){
+			echo '<div>ada jadwal yang bentrok!...</div>';
+			exit();
+		}
 		
 		$i=0;		
 		foreach ($array as $k => $v) {
@@ -544,8 +563,8 @@ class FormBooking extends CI_Controller
 		$array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
 		                    '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
 
-		//$event_id 		= $this->input->post('event_id');
-		$event_id = '0';
+		$event_id 		= $this->input->post('event_id');
+		//$event_id = '0';
 		$ruang 			= $this->input->post('ruang');
 		$_tgl_kegiatan 	= $this->input->post('tgl_kegiatan');
 		//$tgl_kegiatan 	= format_tanggal($_tgl_kegiatan);
@@ -730,7 +749,7 @@ class FormBooking extends CI_Controller
 		#delete data kegiatan dan jadwal
 		$nomor = $this->input->post('nomor');
 		$this->formbookingmodel->deleteKegiatan($nomor);
-
+		$this->formbookingmodel->deleteWaktu($nomor);
 	}
 
 	/*public function format_tanggal($_tgl_kegiatan){

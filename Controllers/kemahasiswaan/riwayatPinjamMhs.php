@@ -17,6 +17,7 @@ class RiwayatPinjamMhs extends CI_Controller
 		$this->load->model('penggunaan/ruangrapatmodel');
 		$this->load->model('kemahasiswaan/formbookingmodel');
 		$this->load->model('kemahasiswaan/statuspinjammodel');
+		$this->load->model('organisasi');
 		$this->load->library('Ajax_pagination');
 		$this->perPage = 10;
 		date_default_timezone_set('Asia/Jakarta');
@@ -24,6 +25,10 @@ class RiwayatPinjamMhs extends CI_Controller
 		$userlogin = ($this->session->userdata['logged_in']['username']);
 		$this->data_header['foto'] = $this->service->getFoto($userlogin);
 		$this->data_header['nama'] = $this->service->getNama($userlogin);
+		
+		$this->data_header['cn'] = $this->session->userdata['logged_in']['cn'];
+		$this->data_header['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
+		
 		//buat test doang --1--
 		#$this->session->userdata['logged_in']['hak_akses'] =0;	
 		#$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);

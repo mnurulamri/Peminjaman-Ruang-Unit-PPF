@@ -131,9 +131,7 @@ ini_set('display_errors', 1);
 			'nomor' 		=> $nomor,
 			'details'		=> $kebutuhan,
 			'catatan'		=> $catatan,
-			'status'		=> 0,
 			'username' 		=> $username,
-			'flag'			=> 0,
 			'tema' 			=> $tema,
 			'deskripsi' 	=> $deskripsi,
 			'tujuan' 		=> $tujuan,
@@ -238,6 +236,19 @@ ini_set('display_errors', 1);
 			$i++;
 		}
 
+		#Cekbentrok
+		foreach ($array as $k => $v) {
+			$ruang = $v['ruang'];
+			$start_date = $v['tgl_kegiatan'].' '.$v['jam_awal'].':'.$v['menit_awal'];
+			$end_date = $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir'];
+			$jadwal_bentrok = $this->ruangrapatmodel->cekJadwalBentrok( $start_date, $end_date, $ruang);  //untuk data baru
+		}
+		
+		if(count($jadwal_bentrok) > 0){
+			echo '<div>ada jadwal yang bentrok!...</div>';
+			exit();
+		}
+
 		$i=0;
 		foreach ($array as $k => $v) {
 
@@ -331,5 +342,57 @@ ini_set('display_errors', 1);
 		echo '<pre>';
 		print_r($data);
 		echo '</pre>';
+	}
+	
+	public function cekJadwalBentrok(){
+
+		$array_hari = array('Sun'=>'Minggu', 'Mon'=>'Senin', 'Tue'=>'Selasa', 'Wed'=>'Rabu', 'Thu'=>'Kamis', 'Fri'=>'Jumat', 'Sat'=>'Sabtu');
+		$array_bulan = array('1'=>'Januari', '2'=>'Februari', '3'=>'Maret', '4'=>'April', '5'=>'Mei', '6'=>'Juni', '7'=>'Juli',
+		                    '8'=>'Agustus', '9'=>'September', '10'=>'Oktober', '11'=>'Nopember', '12'=>'Desember', );
+
+		$event_id 		= $this->input->post('event_id');
+		$ruang 			= $this->input->post('ruang');
+		$_tgl_kegiatan 	= $this->input->post('tgl_kegiatan');
+		$tgl_kegiatan 	= tanggalToDb($_tgl_kegiatan);
+		$jam_awal 		= $this->input->post('jam_mulai');
+		$menit_awal 	= $this->input->post('menit_mulai');
+		$jam_akhir 		= $this->input->post('jam_selesai');
+		$menit_akhir 	= $this->input->post('menit_selesai');
+
+		$start_date 	= $tgl_kegiatan.' '.$jam_awal.':'.$menit_awal;
+		$end_date 		= $tgl_kegiatan.' '.$jam_akhir.':'.$menit_akhir;
+
+		//tentukan jadwal bentrok berdasarkan data yang sudah masuk sebelumnya dengan data yang baru diinput
+		if ($event_id == 0) {
+			$jadwal_bentrok = $this->ruangrapatmodel->cekJadwalBentrok( $start_date, $end_date, $ruang);  //untuk data baru
+		} else {
+			$jadwal_bentrok = $this->ruangrapatmodel->jadwalBentrok($event_id, $start_date, $end_date, $ruang);  //untuk data yang sudah ada sebelumnya
+		}		
+		
+		//tampilkan informasi jadwal yang bentrok
+		if ($jadwal_bentrok) {			
+			foreach ($jadwal_bentrok as $key => $value) {
+				//tentukan jadwal yang bentrok
+				$event_name	= $value->event_name;
+				$ruang 		= $value->nm_ruang;
+				$d 			= date('D', strtotime($value->start_date));
+				$waktu_awal = date('H:i', strtotime($value->start_date));
+				$waktu_akhir= date('H:i', strtotime($value->end_date));
+				$nama_hari 	= $array_hari[$d];
+				$tgl 		= $value->tgl;
+				$bulan 		= $array_bulan[$value->bulan];
+				$tahun 		= $value->tahun;
+				$tanggal 	= $tgl.' '.$bulan.' '.$tahun;
+				$jenis_event = (substr($value->nomor, 0, 4) == 'siak' or substr($value->nomor, 0, 4) == 'siak') ? 'Mata Kuliah' : 'Kegiatan';
+
+				//tampilkan pesan bentrok
+				echo '
+				<div>&nbsp;</div>
+				<!--<pre style="text-align:center; color:red">Bentrok Dengan Kegiatan '.$event_name.', Hari '.$nama_hari.' Tanggal '.$tanggal.' Jam '.$waktu_awal.'-'.$waktu_akhir.' Ruang '.$ruang.'</pre>-->
+				<pre style="text-align:center; color:red">Bentrok Dengan '.$jenis_event. ' '.$event_name.'</pre>
+
+';	
+			}		
+		}
 	}
 }

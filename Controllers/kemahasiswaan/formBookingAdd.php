@@ -14,6 +14,9 @@ class FormBookingAdd extends CI_Controller
 		$this->load->library('Ajax_pagination');
 		$this->perPage = 10;
 		date_default_timezone_set('Asia/Jakarta');
+
+		error_reporting(E_ALL);
+		ini_set('display_errors', 1);
 	}
 
 	public function getData()

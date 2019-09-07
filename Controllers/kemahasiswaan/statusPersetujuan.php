@@ -15,6 +15,7 @@ class StatusPersetujuan extends CI_Controller
 		$this->load->model('penggunaan/ruangrapatmodel');
 		$this->load->model('kemahasiswaan/statuspinjammodel');
 		$this->load->model('kemahasiswaan/formbookingmodel');
+		$this->load->model('organisasi');
 		$this->load->helper('formBookingEdit');
 		$this->load->helper('cetakJadwal');
 		$this->load->helper('dokumen');
@@ -30,6 +31,9 @@ class StatusPersetujuan extends CI_Controller
 		$userlogin = ($this->session->userdata['logged_in']['username']);
 		$this->data_header['foto'] = $this->service->getFoto($userlogin);
 		$this->data_header['nama'] = $this->service->getNama($userlogin);
+		$this->data_header['cn'] = $this->session->userdata['logged_in']['cn'];
+		$this->data_header['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
+		
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
@@ -242,24 +246,31 @@ class StatusPersetujuan extends CI_Controller
 			case 'tunda':
 				$ket_status = '<span style="color:#C85EC7">Ditunda</span>';
 				$status = 4;
+				$flag_cetak = 0;
 				break;
 			case 'tolak':
 				$ket_status = '<span style="color:#808000">Ditolak</span>';
 				$status = 5;
+				$flag_cetak = 0;
 				break;
 			case 'setuju':
 				$ket_status = '<span style="color:#009966">Menunggu Persetujuan Wakil Manajer PPF</span>';
 				$status = 1;
+				$flag_cetak = 1;
 				break;
 			default:
 				$ket_status = '???';
 				break;
 		}
 
+		$tgl_approval_manajer_kemahasiswaan = date('Y-m-d h:i:s');
+
 		$data = array(
 			'nomor' => $nomor,
 			'status' => $status,
 			'alasan' => $alasan,
+			'flag_cetak' => $flag_cetak,
+			'tgl_approval_manajer_kemahasiswaan' => $tgl_approval_manajer_kemahasiswaan
 		);
 		$this->formbookingmodel->updateKegiatan($nomor, $data);
 

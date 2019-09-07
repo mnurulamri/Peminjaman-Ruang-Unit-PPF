@@ -8,12 +8,15 @@ class Home extends CI_Controller
 		$this->load->database();
 		$this->load->library('service');
 		$this->load->model('penggunaan/ruangrapatmodel');
+		$this->load->model('organisasi');
 		date_default_timezone_set('Asia/Jakarta');
-
+		ini_set('display_errors', 1);
 	}
 	public function index()
-	{		
+	{	
 		$userlogin = ($this->session->userdata['logged_in']['username']);
+		$data['cn'] = $this->session->userdata['logged_in']['cn'];
+		$data['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
 		$data['foto'] = $this->service->getFoto($userlogin);
 		$data['nama'] = $this->service->getNama($userlogin);
 		$data['ruang'] 		= $this->ruangrapatmodel->getRuang();

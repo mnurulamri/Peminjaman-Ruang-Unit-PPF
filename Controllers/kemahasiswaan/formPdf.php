@@ -6,6 +6,7 @@ class FormPdf extends CI_Controller {
 		$this->load->database();
 		$this->load->model('penggunaan/ruangrapatmodel');
 		$this->load->model('kemahasiswaan/formbookingmodel');
+		$this->load->model('organisasi');
 		/*$this->load->helper('form_kegiatan');*/
 		$this->load->helper('cetakJadwal');
 		$this->load->helper('cetak_izin_kegiatan');
@@ -14,13 +15,56 @@ class FormPdf extends CI_Controller {
 		$this->load->helper('dokumen');
 		$this->load->library("Pdf");
 		date_default_timezone_set('Asia/Jakarta');
-		$this->session->userdata['logged_in']['hak_akses'] =0;				
+		$this->session->userdata['logged_in']['hak_akses'] =0;
+		ini_set('display_errors',1);	
 	}
 
 	public function index()
 	{  
 		//menampilkan isian data pada edit form peminjaman
-		$nomor = 'ppfRknpZFupne55DFwto5z5'; //$this->input->post('nomor');
+		$nomor = 'ppfoTkHB5NSgA03mGmkHFtz'; //$this->input->post('nomor');
+		$data['data_kegiatan'] = $this->formbookingmodel->getDataKegiatan($nomor);
+		$data['data_kegiatan_entitas'] = $this->formbookingmodel->getDataKegiatanEntitas($nomor);
+		$data['data_kegiatan_jenis'] = $this->formbookingmodel->getDataKegiatanJenis($nomor);
+		$data['data_kegiatan_kategori'] = $this->formbookingmodel->getDataKegiatanKategori($nomor);
+		$data['data_kegiatan_peserta'] = $this->formbookingmodel->getDataKegiatanPeserta($nomor);
+		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
+		
+		$ruang = $this->ruangrapatmodel->getRuang();
+		$data['ruang'] 		= $ruang;
+		$data_kegiatan = $this->formbookingmodel->getDataKegiatan($nomor);	
+		$data['organisasi'] = $this->organisasi->nama_organisasi($data_kegiatan[0]['kode_org']);
+		$this->load->view('kemahasiswaan/cetakIzinKegiatanTest', $data);
+		
+	}
+
+	public function cetakIzinKegiatan()
+	{
+		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);    
+	 
+	    // set document information
+	    $pdf->SetCreator(PDF_CREATOR);
+	    $pdf->SetAuthor('Muhammad Nuurul Amri');
+	    $pdf->SetTitle('Form Permohonan Pemakaian Ruangan');
+	    $pdf->SetSubject('TCPDF From Permohonan');
+	    $pdf->SetKeywords('TCPDF, PDF, Permohonan, Pemakaian, Ruangan'); 
+		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED); 
+	    $pdf->SetMargins('10', '10', '10'); //$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+	    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	        require_once(dirname(__FILE__).'/lang/eng.php');
+	        $pdf->setLanguageArray($l);
+	    }  
+	    $pdf->setFontSubsetting(true);
+	    $pdf->SetFont('dejavusans', '', 8, '', true);
+	    $pdf->AddPage(); 
+	 
+	    //content
+		$nomor = $this->uri->segment('4');
+	    //$nomor = $this->input->post('nomor'); // 'ppflA8QPlqQbg4mcRMlRvG2'; //
 		$data['data_kegiatan'] = $this->formbookingmodel->getDataKegiatan($nomor);
 		$data['data_kegiatan_entitas'] = $this->formbookingmodel->getDataKegiatanEntitas($nomor);
 		$data['data_kegiatan_jenis'] = $this->formbookingmodel->getDataKegiatanJenis($nomor);
@@ -29,9 +73,33 @@ class FormPdf extends CI_Controller {
 		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
 		$ruang = $this->ruangrapatmodel->getRuang();
 		$data['ruang'] 		= $ruang;
-		$this->load->view('kemahasiswaan/cetakIzinKegiatanTest', $data);
+		$data_kegiatan = $this->formbookingmodel->getDataKegiatan($nomor);	
+		$data['organisasi'] = $this->organisasi->nama_organisasi($data_kegiatan[0]['kode_org']);
+		
+		// output the HTML content
+		
+		#$url_image = 'http://ppf.fisip.ui.ac.id/backend/assets/images/logo-fisip.png';
+		$url_image = 'http://fisip.ui.ac.id/wp-content/uploads/2014/11/logo-fisip.png';
+		$url_fisip = 'http://fisip.ui.ac.id';
+		$pdf->Image($url_image, 15, 15, 50, 18, 'PNG', $url_fisip, '', false, 300, '', false, false, 1, false, false, false);	
+		$pdf->SetFont('dejavusans', '', 13, '', true);
+		$pdf->SetXY('75','18');
+		$pdf->Cell(80, 7, 'FORMULIR PERMOHONAN IZIN KEGIATAN (FORPIK)', 0, 1, 'L', 0, '', 0);
+		$pdf->SetXY('75','23');
+		$pdf->SetFont('dejavusans', '', 10, '', true);
+		$pdf->Cell(80, 7, 'MAHASISWA FISIP UI', 0, 1, 'L', 0, '', 0);
+		#cetak garis paling atas
+		$style = array('width' => 0.2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0));
+		$pdf->Line(73, 16, 73, 32, $style);  //garis horizontal box tanda tangan
+		$pdf->Ln(10);
+		
+	    $html = $this->load->view('kemahasiswaan/cetakIzinKegiatan', $data, true); //data_izin_kegiatan($str);
+		
+		// output the HTML content
+		$pdf->writeHTML($html, true, false, true, false, '');
+		$pdf->Output('form_izin_kegiatan.pdf', 'I');    
 	}
-
+	
 	public function test(){
 
 	    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);    
@@ -93,26 +161,38 @@ class FormPdf extends CI_Controller {
 	    //content
 		$nomor = $this->uri->segment('4');
 	    //$nomor = $this->input->post('nomor'); // 'ppflA8QPlqQbg4mcRMlRvG2'; //
+		//$nomor = 'ppfb2m4rg9GekNtFwC2rHbV';
 		$data['data_kegiatan'] = $this->formbookingmodel->getDataKegiatan($nomor);
 		$data['data_kegiatan_entitas'] = $this->formbookingmodel->getDataKegiatanEntitas($nomor);
 		$data['data_kegiatan_jenis'] = $this->formbookingmodel->getDataKegiatanJenis($nomor);
 		$data['data_kegiatan_kategori'] = $this->formbookingmodel->getDataKegiatanKategori($nomor);
 		$data['data_kegiatan_peserta'] = $this->formbookingmodel->getDataKegiatanPeserta($nomor);
 		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
+		$data['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
 		$ruang = $this->ruangrapatmodel->getRuang();
 		$data['ruang'] 		= $ruang;
 		
 		// output the HTML content
 		
-		$url_image = 'http://ppf.fisip.ui.ac.id/backend/assets/images/logo-fisip.png';
+		#$url_image = 'http://ppf.fisip.ui.ac.id/backend/assets/images/logo-fisip.png';
+		/*stream_context_set_default(
+			'ssl' => [
+				'verify_peer' => false,
+				'verify_peer_name' => false
+			]
+		);*/
+
+		//$url_image = base_url().'assets/images/logo-fisip.png';
+		//$url_image = $_SERVER['DOCUMENT_ROOT'].base_url().'assets/images/logo-fisip.png';
+		$url_image = 'http://fisip.ui.ac.id/wp-content/uploads/2014/11/logo-fisip.png';
 		$url_fisip = 'http://fisip.ui.ac.id';
 		$pdf->Image($url_image, 15, 15, 50, 18, 'PNG', $url_fisip, '', false, 300, '', false, false, 1, false, false, false);	
 		$pdf->SetFont('dejavusans', '', 13, '', true);
 		$pdf->SetXY('75','18');
-		$pdf->Cell(80, 7, 'FORMULIR PERMOHONAN IZIN KEGIATAN', 0, 1, 'L', 0, '', 0);
+		$pdf->Cell(80, 7, 'FORMULIR PERMOHONAN IZIN KEGIATAN (FORPIK)', 0, 1, 'L', 0, '', 0);
 		$pdf->SetXY('75','23');
 		$pdf->SetFont('dejavusans', '', 10, '', true);
-		$pdf->Cell(80, 7, '(KHUSUS MAHASISWA FISIP UI)', 0, 1, 'L', 0, '', 0);
+		$pdf->Cell(80, 7, 'MAHASISWA FISIP UI', 0, 1, 'L', 0, '', 0);
 		#cetak garis paling atas
 		$style = array('width' => 0.2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0));
 		$pdf->Line(73, 16, 73, 32, $style);  //garis horizontal box tanda tangan
@@ -122,6 +202,10 @@ class FormPdf extends CI_Controller {
 		
 		// output the HTML content
 		$pdf->writeHTML($html, true, false, true, false, '');
+		
+		 // set margins
+	    $pdf->SetMargins('15', '10', '5');
+	
 		$pdf->AddPage();
 		
 		//$this->cetakFormJadwal();
@@ -174,7 +258,7 @@ class FormPdf extends CI_Controller {
 	    $bulan = date('m');
 	    $tahun = date('Y');
 
-		$url_image = 'https://ppf.fisip.ui.ac.id/backend/assets/images/logo-fisip.png';
+		$url_image = 'http://fisip.ui.ac.id/wp-content/uploads/2014/11/logo-fisip.png';
 		$url_fisip = 'https://fisip.ui.ac.id';
 		$pdf->Image($url_image, 15, 15, 50, 18, 'PNG', $url_fisip, '', false, 300, '', false, false, 1, false, false, false);	
 		$pdf->SetFont('dejavusans', '', 13, '', true);
@@ -503,7 +587,7 @@ class FormPdf extends CI_Controller {
 	}
 	
 	public function cek(){
-		echo $nomor = $this->uri->segment('4');
+		$nomor = $this->uri->segment('4');
 		$data = $this->getDataFormPengajuan($nomor);
 		//$data = $this->ruangrapatmodel->getKegiatan($nomor);
 		//$data_jadwal = $this->ruangrapatmodel->getJadwalRuang($nomor);
@@ -524,6 +608,26 @@ class FormPdf extends CI_Controller {
           //counter
           $i++;
 		}
-		echo '<pre>'; print_r($jadwal); echo '</pre>';
+		echo '<pre>';print_r($_SERVER['DOCUMENT_ROOT']);echo '<br>'; print_r($jadwal); echo '</pre>';
+	}
+
+	function getImageLogo() {
+		/*stream_context_create(
+			'ssl' => [
+				'verify_peer' => false,
+				'verify_peer_name' => false
+			]
+		);*/
+
+		//$url = 'https://ppf.fisip.ui.ac.id/backend/assets/images/logo-fisip.png';
+		$url = 'http://fisip.ui.ac.id/wp-content/uploads/2014/11/logo-fisip.png';
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_HEADER, false);
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_SSLVERSION,3); 
+	    $result = curl_exec($ch);
+	    curl_close($ch);
+	    return $result;
+	    //print_r($result);
 	}
 }
