@@ -2,31 +2,36 @@
 
 class FormBookingEdit extends CI_Controller 
 {
+	var $kode_org = null;
+	var $nama_dep = null;
+	
 	public function __construct() {
 		parent::__construct();
 		$this->load->database();
 		$this->load->library('service');
 		$this->load->helper('tanggal');
 		$this->load->helper('formBookingEdit');
+		$this->load->helper('organisasi_mhs');
 		$this->load->model('penggunaan/ruangrapatmodel');
 		$this->load->model('kemahasiswaan/statuspinjammodel');
 		$this->load->model('kemahasiswaan/formbookingmodel');
+		$this->load->model('organisasi');
 		$this->load->library('Ajax_pagination');
 		$this->perPage = 10;
 		date_default_timezone_set('Asia/Jakarta');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-		//buat test doang --1--
-		#$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
-		#$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
-		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
-		#$this->session->userdata['logged_in']['hak_akses'] = 0;
+		
+		error_reporting(E_ALL);
+		ini_set('display_errors', 1);
+		
 		$userlogin = ($this->session->userdata['logged_in']['username']);
 		$this->data_header['foto'] = $this->service->getFoto($userlogin);
 		$this->data_header['nama'] = $this->service->getNama($userlogin);
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
+		
+		$this->kode_org = $this->session->userdata['logged_in']['kode_org'];
+		$this->nama_dep = $this->organisasi->nama_dep($this->kode_org);
 	}
 
 	public function getData()
@@ -39,8 +44,9 @@ ini_set('display_errors', 1);
 		$data['data_kegiatan_kategori'] = $this->formbookingmodel->getDataKegiatanKategori($nomor);
 		$data['data_kegiatan_peserta'] = $this->formbookingmodel->getDataKegiatanPeserta($nomor);
 		$data['data_jadwal'] = $this->formbookingmodel->getDataJadwal($nomor);
-		$data['ruang_new'] = $this->getRuangAddRow();;
-
+		$data['nama_dep'] = $this->nama_dep;
+		$data['ruang_new'] = $this->getRuangAddRow();
+		
 		//set ruang berdasarkan hak akses
 		$hak_akses = ($this->session->userdata['logged_in']['hak_akses']);
 		if($hak_akses == 1){ //ruang untuk admin
@@ -117,6 +123,11 @@ ini_set('display_errors', 1);
 		//$tgl_proses 	= tanggalToDb($tgl_proses);		
 		$tgl_permohonan = tanggalToDb($tgl_permohonan);
 		$username = $this->session->userdata['logged_in']['username'];
+		
+		$kode_org_mhs 		= $this->input->post('kode_org_mhs');
+		$ketua_org_mhs 	= $this->input->post('ketua_org_mhs');
+		$pejabat_dep		= $this->input->post('pejabat_dep');
+		$nip		= $this->input->post('nip');
 
 		$data_kegiatan = array(			
 			'event_name' 	=> $event_name,
@@ -135,9 +146,14 @@ ini_set('display_errors', 1);
 			'tema' 			=> $tema,
 			'deskripsi' 	=> $deskripsi,
 			'tujuan' 		=> $tujuan,
-			'pengisi_acara'	=> $pengisi_acara
+			'pengisi_acara'	=> $pengisi_acara,
+			
+			'kode_org_mhs' 	=> $kode_org_mhs,
+			'ketua_org_mhs'	=> $ketua_org_mhs,
+			'pejabat_dep'	=> $pejabat_dep,
+			'nip'	=> $nip
 		);
-
+		
         $entitas = explode(",", $entitas);
 		foreach ($entitas as $key => $value) {
 			if ($value == 'lainnya') {
@@ -265,7 +281,7 @@ ini_set('display_errors', 1);
 				'end_date' => $v['tgl_kegiatan'].' '.$v['jam_akhir'].':'.$v['menit_akhir']
 			);*/
 			$i++;
-			$sql = "REPLACE INTO waktu (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
+			echo $sql = "REPLACE INTO waktu_testing (event_id,ruang,nomor,start_date,end_date) VALUES('$event_id', '$ruang', '$nomor', '$start_date', '$end_date')";
 			mysql_query($sql) or die(mysql_error());
 		}
 
