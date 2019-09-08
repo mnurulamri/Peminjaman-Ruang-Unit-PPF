@@ -1,6 +1,6 @@
 <?php
 //echo '<pre>';
-//print_r($data_kegiatan);
+//print_r($ruang_new);
 //print_r($data_kegiatan_entitas);
 //print_r($data_kegiatan_jenis);
 //print_r($data_kegiatan_kategori);
@@ -29,6 +29,11 @@ foreach ($data_kegiatan as $k => $v) {
     $file_rundown   = $v['file_rundown'];
     $file_undangan  = $v['file_undangan'];
     $file_lampiran  = $v['file_lampiran'];
+    $file_lampiran  = $v['file_lampiran'];
+    $kode_org_mhs 		= $v['kode_org_mhs'];
+		$ketua_org_mhs 	= $v['ketua_org_mhs'];
+		$pejabat_dep		= $v['pejabat_dep'];
+		$nip		= $v['nip'];
 }
 
 //set enable browse file
@@ -36,9 +41,24 @@ $disabled_file_tor = (!empty($file_tor)) ? 'disabled' : '';
 $disabled_file_rundown = (!empty($file_rundown)) ? 'disabled' : '';
 $disabled_file_undangan = (!empty($file_undangan)) ? 'disabled' : '';
 $disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
- 
+
+foreach ($nama_dep as $v){
+	$nama_dep = $v['departemen'];
+}
+
+$array_org = array(
+			'bem' => 'Badan Eksekutif Mahasiswa',
+			'bpm' => 'Badan Perwakilan Mahasiswa',
+			'hm' => 'Himpunan Mahasiswa',
+			'bo' => 'Badan Otonom Mahasiswa',
+			'bso' => 'Badan Semi Otonom Mahasiswa'
+		);
+$nama_org_mhs = $array_org[$kode_org_mhs];
+
+$nama_ketua = ($kode_org_mhs == 'hm') ? $nama_org_mhs.' '.$nama_dep : $nama_org_mhs;
 ?>
-<input type="text" id="nomor" name="nomor" class="form-control" size="5" value="<?=$nomor?>"/>
+<input type="hidden" id="nomor" name="nomor" class="form-control" size="5" value="<?=$nomor?>"/>
+<input type="hidden" id="v_kode_org_mhs" name="v_kode_org_mhs" class="form-control" size="5" value="<?=$kode_org_mhs?>"/>
 <section class="content" >
     <!-- Bagian Untuk Diisi Petugas Infrastruktur -->
     <div class="box box-warning">        
@@ -67,10 +87,11 @@ $disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
             </div>
         </div><!-- /.Bagian Untuk Diisi Petugas Infrastruktur -->
     </div>
+    
     <!-- Bagian Untuk Diisi Pemohon -->
     <div class="box box-warning">        
         <div class="box-header with-border" style="text-align:center">
-            <b class="box-title">Bagian Untuk Diisi Pemohon</b>
+            <b class="box-title">Diajukan Oleh</b>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -125,6 +146,32 @@ $disabled_file_lampiran = (!empty($file_lampiran)) ? 'disabled' : '';
             </div>
         </div>
     </div>
+    
+    <!-- Data Pengesahan -->
+    <div class="box box-warning">
+        <div class="box-header with-border" style="text-align:center">
+            <b class="box-title">Diketahui Oleh</b>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+            	<!-- <label for="ketua_lembaga" class="col-sm-3 col-md-3 col-md-3 control-label" style="text-align:right">Nama Organisasi Mahasiswa :  </label> -->
+            	<div class="col-sm-1 col-md-1 col-md-1"></div>
+                <div class="col-sm-5 col-md-5 col-md-5">
+                	<div style="font-weight:bold"> Nama Organisasi Mahasiswa :  </div>
+    				<? data_pengesahan($kode_org_mhs);?>
+    			</div>
+			    <div class="col-sm-6 col-md-6 col-md-6">
+			        <div style="font-weight:bold">Nama Ketua <span id="edit_nama_organisasi"><? echo $nama_ketua?></span></div>
+			        <input type="text" name="edit_ketua_org_mhs" class="ketua_org_mhs form-control" id="edit_ketua_org_mhs" value="<?=$ketua_org_mhs?>">
+			        	<br>
+			        <div id="edit_label-pejabat" style="font-weight:bold">Nama Pejabat Departemen <span id="edit_nama_dep"></span></div>
+			        <input type="text" name="edit_nip" class="nip form-control" id="edit_nip" value="<?=$nip?>">
+			        <input type="text" name="edit_pejabat_dep" class="pejabat_dep form-control" id="edit_pejabat_dep" value="<?=$pejabat_dep?>">
+			    </div>
+			</div>
+		</div>
+	</div>
+	
     <!-- Data Kegiatan -->
     <div class="box box-warning">        
         <div class="box-header with-border" style="text-align:center">
