@@ -1,60 +1,72 @@
-<script>
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	CKEDITOR.replace('edit_tema')
+	CKEDITOR.replace('edit_deskripsi')
+	CKEDITOR.replace('edit_tujuan')
+	CKEDITOR.replace('edit_pengisi_acara')
+	
+	$("#edit_del_row").click(function()
+	{
+	    if(!$.trim($('#edit_jadwal').html()).length)
+	    {
+	        alert ("Now table is empty")
+	    }else{
+	        $('#test').children('tr').find('input[type=checkbox]:checked').each(function () 
+	        {
+	            $(this).closest('tr').remove()
+	        })
+	
+	        $('#edit_jadwal').children('tr').find('input[type=checkbox]:checked').each(function () 
+	        {
+	            $(this).closest('tr').remove()
+	        })
+	    }
+	})
+	
+	$("#edit_clear").click(function()
+	{
+	    $('#test tr').empty();
+	    $('#edit_jadwal').empty();
+	})
+	
+	$("#edit_jam_selesai").change(function(){
+	    var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val()
+	    var jam_selesai = $(this).parent().find('#edit_jam_selesai').val()
+	    var nama_hari  = namaHari(tgl_kegiatan)
+	    
+	    //peminjaman ruang pada hari sabtu hanya diperkenankan sampai dengan jam 14.00
+	    if (nama_hari == 'Sabtu'){
+	        if (jam_selesai > 14){
+	            alert('Kegiatan pada hari sabtu hanya diizinkan sampai dengan pukul 14.00 WIB')
+	            $(this).parent().find('#edit_jam_selesai').val('14')
+	        }
+	    }
+	})
+	
+	$(".edit_ruang").change(function(){
+	    var nama_ruang = $(this).val()
+	    if(nama_ruang == 201 || nama_ruang == 202){
+	        alert("Penggunaan ruang ini hanya dikhususkan untuk kegiatan rapat, selanjutnya silahkan berkoordinasi dengan staf sekretariat pimpinan")   
+	   }
+	   
+	})
 
-//editor
-CKEDITOR.replace('edit_tema')
-CKEDITOR.replace('edit_deskripsi')
-CKEDITOR.replace('edit_tujuan')
-CKEDITOR.replace('edit_pengisi_acara')
-
-$("#edit_del_row").click(function()
-{
-    if(!$.trim($('#edit_jadwal').html()).length)
-    {
-        alert ("Now table is empty")
-    }else{
-        $('#test').children('tr').find('input[type=checkbox]:checked').each(function () 
-        {
-            $(this).closest('tr').remove()
-        })
-
-        $('#edit_jadwal').children('tr').find('input[type=checkbox]:checked').each(function () 
-        {
-            $(this).closest('tr').remove()
-        })
-    }
-})
-
-$("#edit_clear").click(function()
-{
-    $('#test tr').empty();
-    $('#edit_jadwal').empty();
-})
-
-$("#edit_jam_selesai").change(function(){
-    var tgl_kegiatan= $(this).parent().find('#edit_tgl_kegiatan').val()
-    var jam_selesai = $(this).parent().find('#edit_jam_selesai').val()
-    var nama_hari  = namaHari(tgl_kegiatan)
-    
-    //peminjaman ruang pada hari sabtu hanya diperkenankan sampai dengan jam 14.00
-    if (nama_hari == 'Sabtu'){
-        if (jam_selesai > 14){
-            alert('Kegiatan pada hari sabtu hanya diizinkan sampai dengan pukul 14.00 WIB')
-            $(this).parent().find('#edit_jam_selesai').val('14')
-        }
-    }
-})
-
-$(".edit_ruang").change(function(){
-    var nama_ruang = $(this).val()
-    if(nama_ruang == 201 || nama_ruang == 202){
-        alert("Penggunaan ruang ini hanya dikhususkan untuk kegiatan rapat, selanjutnya silahkan berkoordinasi dengan staf sekretariat pimpinan")   
-   }
-   
-})
-
-$(document).ready(function() 
-{
-    $(".update").click(function()
+	$('#edit_nip').hide();
+	$('#edit_pejabat_dep').hide();
+	$('#edit_label-pejabat').hide();
+		
+	if($("#v_kode_org_mhs").val() == "hm"){
+		$('#edit_nip').show();
+		$('#edit_pejabat_dep').show();
+		$('#edit_label-pejabat').show();
+	} else {
+		$('#edit_nip').hide();
+		$('#edit_pejabat_dep').hide();
+		$('#edit_label-pejabat').hide();
+	}
+	
+	$(".update").click(function()
     {
     	//alert("test")
         nomor           = $('#nomor').val()
@@ -94,6 +106,11 @@ $(document).ready(function()
         var deskripsi       = CKEDITOR.instances.edit_deskripsi.getData()
         var tujuan          = CKEDITOR.instances.edit_tujuan.getData()
         var pengisi_acara   = CKEDITOR.instances.edit_pengisi_acara.getData()
+        
+        var kode_org_mhs = $("input[name='edit_organisasi_mhs']:checked").val();
+        var ketua_org_mhs	= $('#edit_ketua_org_mhs').val();
+        var pejabat_dep         = $('#edit_pejabat_dep').val();
+        var nip         = $('#edit_nip').val();
 
         //masukkan tanggal dan waktu kegiatan ke dalam array
         var event_id = [];
@@ -162,7 +179,13 @@ $(document).ready(function()
             formData.append("jam_selesai", jam_selesai);
             formData.append("menit_mulai", menit_mulai);
             formData.append("menit_selesai", menit_selesai);
-console.log(ruang)
+            
+        formData.append("kode_org_mhs", kode_org_mhs);
+        formData.append("ketua_org_mhs", ketua_org_mhs);
+        formData.append("pejabat_dep", pejabat_dep);
+        formData.append("nip", nip);
+            
+		console.log(ruang)
         //update data dan jadwal kegiatan
         
         $.ajax({
@@ -176,7 +199,7 @@ console.log(ruang)
                 console.log(data)
                 $(".alert-pesan").fadeIn();
                 $(".alert-pesan").html(data);
-                $(".alert-pesan").fadeOut(2300); 
+                //$(".alert-pesan").fadeOut(2300); 
                 refresh_view_dokumen()
             },
                 error: function (jqXHR, exception) {
@@ -203,7 +226,7 @@ console.log(ruang)
             }           
         })
     })
-
+    
     $(document).on("click", ".hapus-dokumen", function()
     {
         var nomor       = $('#nomor').val()
@@ -235,7 +258,7 @@ console.log(ruang)
             })     
         }
     })
-
+    
     $(document).on('focus', '.edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan', function()
     {
         $(".edit_tgl_kegiatan, #edit_tgl_proses, #edit_tgl_permohonan").datepicker({
@@ -243,12 +266,7 @@ console.log(ruang)
             language: "id"
         })
     })
-    /*
-    $(".edit_tgl_kegiatan").datepicker({
-            autoclose: true,
-            language: "id"
-    })*/
-
+    
     //cek jadwal bentrok
     $(document).on('change', ".cek-bentrok", function(){
         var event_id    = $(this).attr("id")
@@ -327,8 +345,115 @@ console.log(ruang)
             }
         });  
         
+    })
+    
+    $(document).on('click', '.del', function(){
+        var vid = $(this).attr('id');
+        var id = vid.split('_');
+        var event_id = id[1];
+
+        var txt;
+        var r = confirm("Anda yakin akan menghapus jadwal ini!");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url(); ?>penggunaan/ruangRapat/delWaktu",
+                data: {
+                    event_id:event_id
+                },
+
+                success: function(res) {
+                   $('#row_'+event_id).remove();
+                }               
+            });
+            
+        } else {
+            txt = "You pressed Cancel!";
+        }   
+        
     });
 
+    $(document).on("change", "input[name='file_tor']", function(){
+        //alert("test")
+    })
+    
+  //pengesahan organisasi mahasiswa
+  $(document).on('click', '.edit_organisasi_mhs', function(){
+    var kode_org_mhs = $(this).val()
+    var nama_org_mhs = $(this).data("nama-org")
+	var nip = $("#v_nip").val()
+	var pejabat_dep = $("#v_pejabat_dep").val()
+	var nama_dep = $("#v_nama_dep").val()
+    $("#nama_organisasi").text(nama_org_mhs)
+    if(kode_org_mhs == 'hm'){
+    	$("#edit_nip").val(nip)
+    	$("#edit_pejabat_dep").val(pejabat_dep)
+    	$("#edit_nama_dep").val(nama_dep)
+    	$("#edit_nama_organisasi").text(nama_org_mhs + ' Departemen ' + nama_dep)
+    	$('#edit_nip').show();
+    	$('#edit_pejabat_dep').show();
+    	$('#edit_label-pejabat').show();
+	} else {
+		$("#edit_nip").val("")
+    	$("#edit_pejabat_dep").val("")
+    	$("#edit_nama_dep").val("")
+    	$("#edit_nama_organisasi").text(nama_org_mhs)
+    	$('#edit_nip').hide();
+    	$('#edit_pejabat_dep').hide();
+    	$('#edit_label-pejabat').hide();
+	}
+  })
+
+    function refresh_view_dokumen(){
+        //file tor
+        var file_tor = $("input[name='file_tor']").val()
+        var file_tor = file_tor.substr(12)
+        if($("#file_tor").text()==""){
+            $("#file_tor").text(file_tor)
+        }        
+        $("input[name='file_tor']").val("")
+        if(file_tor != ""){
+            $("#file_tor").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_tor" data-file="'+file_tor+'">hapus</button>')
+            $("input[name='file_tor']").prop("disabled", true)
+        } 
+        
+        //file rundown
+        var file_rundown = $("input[name='file_rundown']").val()
+        var file_rundown = file_rundown.substr(12)
+        if($("#file_rundown").text()==""){
+            $("#file_rundown").text(file_rundown)
+        }        
+        $("input[name='file_rundown']").val("")
+        if(file_rundown != ""){
+            $("#file_rundown").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_rundown" data-file="'+file_rundown+'">hapus</button>')
+            $("input[name='file_rundown']").prop("disabled", true)
+        }
+
+        //file undangan
+        var file_undangan = $("input[name='file_undangan']").val()
+        var file_undangan = file_undangan.substr(12)
+        if($("#file_undangan").text()==""){
+            $("#file_undangan").text(file_undangan)
+        }        
+        $("input[name='file_undangan']").val("")
+        if(file_undangan != ""){
+            $("#file_undangan").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_undangan" data-file="'+file_undangan+'">hapus</button>')
+            $("input[name='file_undangan']").prop("disabled", true)
+        }
+
+        //file lampiran
+        var file_lampiran = $("input[name='file_lampiran']").val()
+        var file_lampiran = file_lampiran.substr(12)
+        if($("#file_lampiran").text()==""){
+            $("#file_lampiran").text(file_lampiran)
+        }        
+        $("input[name='file_lampiran']").val("")
+        if(file_lampiran != ""){
+            $("#file_lampiran").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_lampiran" data-file="'+file_lampiran+'">hapus</button>')
+            $("input[name='file_lampiran']").prop("disabled", true)
+        } 
+    }
+    
     var i = 1;
     var ruang_new = '<?=$ruang_new?>';
     $("#edit_add_row").click(function(){
@@ -406,87 +531,5 @@ console.log(ruang)
                 $('#edit_jadwal').append(text);
                 i++;
     })
-
-    $(document).on('click', '.del', function(){
-        var vid = $(this).attr('id');
-        var id = vid.split('_');
-        var event_id = id[1];
-
-        var txt;
-        var r = confirm("Anda yakin akan menghapus jadwal ini!");
-        if (r == true) {
-            $.ajax({
-                type: "POST",
-                url: "<?php echo base_url(); ?>penggunaan/ruangRapat/delWaktu",
-                data: {
-                    event_id:event_id
-                },
-
-                success: function(res) {
-                   $('#row_'+event_id).remove();
-                }               
-            });
-            
-        } else {
-            txt = "You pressed Cancel!";
-        }   
-        
-    });
-
-    $(document).on("change", "input[name='file_tor']", function(){
-        //alert("test")
-    })
-
-    function refresh_view_dokumen(){
-        //file tor
-        var file_tor = $("input[name='file_tor']").val()
-        var file_tor = file_tor.substr(12)
-        if($("#file_tor").text()==""){
-            $("#file_tor").text(file_tor)
-        }        
-        $("input[name='file_tor']").val("")
-        if(file_tor != ""){
-            $("#file_tor").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_tor" data-file="'+file_tor+'">hapus</button>')
-            $("input[name='file_tor']").prop("disabled", true)
-        } 
-        
-        //file rundown
-        var file_rundown = $("input[name='file_rundown']").val()
-        var file_rundown = file_rundown.substr(12)
-        if($("#file_rundown").text()==""){
-            $("#file_rundown").text(file_rundown)
-        }        
-        $("input[name='file_rundown']").val("")
-        if(file_rundown != ""){
-            $("#file_rundown").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_rundown" data-file="'+file_rundown+'">hapus</button>')
-            $("input[name='file_rundown']").prop("disabled", true)
-        }
-
-        //file undangan
-        var file_undangan = $("input[name='file_undangan']").val()
-        var file_undangan = file_undangan.substr(12)
-        if($("#file_undangan").text()==""){
-            $("#file_undangan").text(file_undangan)
-        }        
-        $("input[name='file_undangan']").val("")
-        if(file_undangan != ""){
-            $("#file_undangan").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_undangan" data-file="'+file_undangan+'">hapus</button>')
-            $("input[name='file_undangan']").prop("disabled", true)
-        }
-
-        //file lampiran
-        var file_lampiran = $("input[name='file_lampiran']").val()
-        var file_lampiran = file_lampiran.substr(12)
-        if($("#file_lampiran").text()==""){
-            $("#file_lampiran").text(file_lampiran)
-        }        
-        $("input[name='file_lampiran']").val("")
-        if(file_lampiran != ""){
-            $("#file_lampiran").next().html('<button type="button" class="btn btn-danger btn-xs hapus-dokumen" data-dokumen="file_lampiran" data-file="'+file_lampiran+'">hapus</button>')
-            $("input[name='file_lampiran']").prop("disabled", true)
-        } 
-    }
-
 })
-
 </script>
