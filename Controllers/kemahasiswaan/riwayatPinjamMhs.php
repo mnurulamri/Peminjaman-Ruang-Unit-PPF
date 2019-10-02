@@ -6,10 +6,10 @@ class RiwayatPinjamMhs extends CI_Controller
 	var $userlogin = null;
 	var $username = null;
 	var $data_header = array();
-	
 	var $kode_org = null;
 	var $nama_prodi = null;
 	var $nama_dep = null;
+	var $pejabat_prodi = null;
 
 	public function __construct() {
 		parent::__construct();
@@ -32,23 +32,14 @@ class RiwayatPinjamMhs extends CI_Controller
 		
 		$this->data_header['cn'] = $this->session->userdata['logged_in']['cn'];
 		$this->data_header['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
-		
-		//buat test doang --1--
-		#$this->session->userdata['logged_in']['hak_akses'] =0;	
-		#$this->data_header['foto'] = 'x'; //$this->service->getFoto($userlogin);
-		#$this->data_header['nama'] = 'mnurulamri'; //$this->service->getNama($userlogin);
-		#$this->session->userdata['logged_in']['username'] = 'mnurulamri';
-		#$this->session->userdata['logged_in']['hak_akses'] =0;
-		
-		$this->data_header['cn'] = $this->session->userdata['logged_in']['cn'];
-		$this->data_header['organisasi'] = $this->organisasi->nama_organisasi($this->session->userdata['logged_in']['kode_org']);
-		
+			
 		$this->hak_akses = $this->session->userdata['logged_in']['hak_akses'];
 		$this->userlogin = $this->session->userdata['logged_in']['username'];
 		$this->username = $this->session->userdata['logged_in']['username'];
 		
 		$this->kode_org = $this->session->userdata['logged_in']['kode_org'];
 		$this->nama_dep = $this->organisasi->nama_dep($this->kode_org);
+		$this->pejabat_prodi = $this->organisasi->getPejabatProdi($this->kode_org);
 	}
 
 	public function template()
@@ -81,6 +72,16 @@ class RiwayatPinjamMhs extends CI_Controller
 		$data_org = $this->formbookingmodel->getPejabatDepartemen($kd_dep);
 		$data['data_org'] = $data_org;
 		$data['nama_dep'] = $this->nama_dep;
+		
+		foreach($this->pejabat_prodi as $v){
+			$nip_ketua_prodi = $v['nip_ketua_prodi'];
+			$nama_ketua_prodi = $v['nama_ketua_prodi'];
+			$nama_prodi = $v['nama_prodi'];
+		}
+		
+		$data['nip_ketua_prodi'] = $nip_ketua_prodi;
+		$data['nama_ketua_prodi'] = $nama_ketua_prodi;
+		$data['nama_prodi'] = $nama_prodi;
 		
 		$this->load->view('kemahasiswaan/riwayatView', $data);		
 	}
