@@ -1,6 +1,5 @@
 # Sistem Peminjaman Ruangan (Room Booking System)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Framework: CodeIgniter 3](https://img.shields.io/badge/Framework-CodeIgniter%203-red.svg)](https://codeigniter.com/)
 
 Sistem informasi berbasis web yang dirancang untuk mengotomatisasi proses reservasi ruangan dan fasilitas kelas di lingkungan universitas. Proyek ini dikembangkan untuk meminimalisir kesalahan jadwal (*double booking*) dan mempermudah pemantauan ketersediaan ruangan secara real-time.
